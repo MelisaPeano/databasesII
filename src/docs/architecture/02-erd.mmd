@@ -1,0 +1,49 @@
+erDiagram
+    AppUser {
+        INT user_id PK
+        VARCHAR(100) user_name
+        VARCHAR(100) user_email
+        VARCHAR(100) user_password
+        DATETIME created_in
+    }
+
+    Category {
+        INT category_id PK
+        INT user_id FK
+        VARCHAR(60) category_name
+        CHAR(7) category_color
+        DATETIME created_in
+    }
+
+    List {
+        INT list_id PK
+        INT category_id FK
+        VARCHAR(60) list_name
+        VARCHAR(255) list_description
+        DATETIME created_in
+    }
+
+    Task {
+        INT task_id PK
+        INT list_id FK
+        VARCHAR(100) task_title
+        TEXT task_description
+        DATETIME expires_in
+        ENUM priority      "LOW|HIGH|MIDDLE"
+        ENUM task_status   "NEW|IN_PROGRESS|DONE|CANCELLED"
+        DATETIME created_in
+        DATETIME completed_in
+    }
+
+    Task_status {
+        INT task_status_id PK
+        INT task_id FK
+        ENUM status        "NEW|IN_PROGRESS|DONE|CANCELLED"
+        DATETIME changed_in
+        VARCHAR(100) comment
+    }
+
+    AppUser ||--o{ Category : tiene
+    Category ||--o{ List : agrupa
+    List ||--o{ Task : contiene
+    Task ||--o{ Task_status : historial
