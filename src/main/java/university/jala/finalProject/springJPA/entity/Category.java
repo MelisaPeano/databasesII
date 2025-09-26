@@ -13,7 +13,7 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private AppUser user;
+    private Integer user_id;
 
     @Column(name = "category_name", nullable = false, length = 60)
     private String categoryName;
@@ -22,7 +22,7 @@ public class Category {
     private String categoryColor;
 
     @Column(name = "created_in")
-    private Instant createdIn;
+    private String createdIn;
 
     public Integer getId() {
         return id;
@@ -32,12 +32,12 @@ public class Category {
         this.id = id;
     }
 
-    public AppUser getUser() {
-        return user;
+    public Integer getUser_id() {
+        return user_id;
     }
 
-    public void setUser(AppUser user) {
-        this.user = user;
+    public void setUser_id(Integer user) {
+        this.user_id = user;
     }
 
     public String getCategoryName() {
@@ -56,11 +56,11 @@ public class Category {
         this.categoryColor = categoryColor;
     }
 
-    public Instant getCreatedIn() {
+    public String getCreatedIn() {
         return createdIn;
     }
 
-    public void setCreatedIn(Instant createdIn) {
+    public void setCreatedIn(String createdIn) {
         this.createdIn = createdIn;
     }
 

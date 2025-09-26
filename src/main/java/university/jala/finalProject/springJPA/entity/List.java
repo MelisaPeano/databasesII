@@ -1,4 +1,6 @@
-package university.jala.finalProject.springJPA;
+package university.jala.finalProject.springJPA.entity;
+
+import university.jala.finalProject.springJPA.Category;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -22,7 +24,7 @@ public class List {
     private String listDescription;
 
     @Column(name = "created_in")
-    private Instant createdIn;
+    private String createdIn;
 
     public Integer getId() {
         return id;
@@ -56,11 +58,11 @@ public class List {
         this.listDescription = listDescription;
     }
 
-    public Instant getCreatedIn() {
+    public String getCreatedIn() {
         return createdIn;
     }
 
-    public void setCreatedIn(Instant createdIn) {
+    public void setCreatedIn(String createdIn) {
         this.createdIn = createdIn;
     }
 
