@@ -1,7 +1,8 @@
-package university.jala.finalProject.springJPA;
+package university.jala.finalProject.springJPA.entity;
+
+import university.jala.finalProject.springJPA.Category;
 
 import javax.persistence.*;
-import java.time.Instant;
 
 @Entity
 @Table(name = "List", schema = "databaseII")
@@ -9,11 +10,11 @@ public class List {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "list_id", nullable = false)
-    private Integer id;
+    private Integer listId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    private Integer categoryId;
 
     @Column(name = "list_name", nullable = false, length = 60)
     private String listName;
@@ -22,22 +23,22 @@ public class List {
     private String listDescription;
 
     @Column(name = "created_in")
-    private Instant createdIn;
+    private String createdIn;
 
-    public Integer getId() {
-        return id;
+    public Integer getListId() {
+        return listId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setListId(Integer id) {
+        this.listId = id;
     }
 
-    public Category getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getListName() {
@@ -56,11 +57,11 @@ public class List {
         this.listDescription = listDescription;
     }
 
-    public Instant getCreatedIn() {
+    public String getCreatedIn() {
         return createdIn;
     }
 
-    public void setCreatedIn(Instant createdIn) {
+    public void setCreatedIn(String createdIn) {
         this.createdIn = createdIn;
     }
 
