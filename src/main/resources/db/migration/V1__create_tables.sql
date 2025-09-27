@@ -42,3 +42,10 @@ CREATE TABLE IF NOT EXISTS Task_status (
     comment VARCHAR(100) NULL,
     FOREIGN KEY (task_id) REFERENCES Task(task_id)
 );
+CREATE TABLE IF NOT EXISTS refresh_token (
+    token_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    token VARCHAR(255),
+    expiry_date DATETIME,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES AppUser(user_id)
+);

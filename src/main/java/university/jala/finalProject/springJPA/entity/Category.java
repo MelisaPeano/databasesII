@@ -1,5 +1,7 @@
 package university.jala.finalProject.springJPA;
 
+import university.jala.finalProject.springJPA.entity.AppUser;
+
 import javax.persistence.*;
 import java.time.Instant;
 
