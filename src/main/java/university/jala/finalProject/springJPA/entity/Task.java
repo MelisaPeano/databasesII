@@ -1,4 +1,4 @@
-package university.jala.finalProject.springJPA;
+package university.jala.finalProject.springJPA.entity;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -8,7 +8,7 @@ import java.time.Instant;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id", nullable = false)
+    @Column(name = "task_id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -16,22 +16,21 @@ public class Task {
     private List list;
 
     @Column(name = "task_title", nullable = false, length = 100)
-    private String taskTitle;
+    private String title;
 
-    @Lob
     @Column(name = "task_description")
-    private String taskDescription;
+    private String description;
 
     @Column(name = "expires_in")
     private Instant expiresIn;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "priority")
-    private String priority;
+    private TaskPriority priority;
 
-    @Lob
-    @Column(name = "task_status")
-    private String taskStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "task_status", nullable = false)
+    private TaskState status = TaskState.NEW;
 
     @Column(name = "created_in")
     private Instant createdIn;
@@ -39,76 +38,23 @@ public class Task {
     @Column(name = "completed_in")
     private Instant completedIn;
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public List getList() { return list; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public Instant getExpiresIn() { return expiresIn; }
+    public TaskPriority getPriority() { return priority; }
+    public TaskState getStatus() { return status; }
+    public Instant getCreatedIn() { return createdIn; }
+    public Instant getCompletedIn() { return completedIn; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public List getList() {
-        return list;
-    }
-
-    public void setList(List list) {
-        this.list = list;
-    }
-
-    public String getTaskTitle() {
-        return taskTitle;
-    }
-
-    public void setTaskTitle(String taskTitle) {
-        this.taskTitle = taskTitle;
-    }
-
-    public String getTaskDescription() {
-        return taskDescription;
-    }
-
-    public void setTaskDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
-    }
-
-    public Instant getExpiresIn() {
-        return expiresIn;
-    }
-
-    public void setExpiresIn(Instant expiresIn) {
-        this.expiresIn = expiresIn;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public String getTaskStatus() {
-        return taskStatus;
-    }
-
-    public void setTaskStatus(String taskStatus) {
-        this.taskStatus = taskStatus;
-    }
-
-    public Instant getCreatedIn() {
-        return createdIn;
-    }
-
-    public void setCreatedIn(Instant createdIn) {
-        this.createdIn = createdIn;
-    }
-
-    public Instant getCompletedIn() {
-        return completedIn;
-    }
-
-    public void setCompletedIn(Instant completedIn) {
-        this.completedIn = completedIn;
-    }
-
+    public void setId(Integer id) { this.id = id; }
+    public void setList(List list) { this.list = list; }
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setExpiresIn(Instant expiresIn) { this.expiresIn = expiresIn; }
+    public void setPriority(TaskPriority priority) { this.priority = priority; }
+    public void setStatus(TaskState status) { this.status = status; }
+    public void setCreatedIn(Instant createdIn) { this.createdIn = createdIn; }
+    public void setCompletedIn(Instant completedIn) { this.completedIn = completedIn; }
 }

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Connection;
 
+import static university.jala.finalProject.config.DataBaseConnection.getConnection;
+
 @SpringBootApplication
 @RestController
 public class Main {
@@ -17,5 +19,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Main.class, args);
+
+        Connection bd = getConnection();
 	}
 }
