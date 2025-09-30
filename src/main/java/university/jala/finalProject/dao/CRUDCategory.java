@@ -1,7 +1,7 @@
 package university.jala.finalProject.dao;
 
 import university.jala.finalProject.config.DataBaseConnection;
-import university.jala.finalProject.springJPA.Category;
+import university.jala.finalProject.springJPA.entity.Category;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,14 +30,21 @@ public class CRUDCategory extends DataBaseConnection {
                 return false;
             }
 
-            String sql = "INSERT INTO Category (user_id, category_name, category_color, created_in) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Category (user_id, category_name, category_color, created_in) VALUES (?, ?, ?, ?)";
 
             statement = connection.prepareStatement(sql);
             statement.setInt(1, category.getUser_id());
             statement.setString(2, category.getCategoryName());
             statement.setString(3, category.getCategoryColor());
-            statement.setString(4, category.getCreatedIn().toString());
-            statement.execute();
+
+            java.time.Instant ci = category.getCreatedIn();
+            if (ci == null) {
+                statement.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
+            } else {
+                statement.setTimestamp(4, java.sql.Timestamp.from(ci));
+            }
+
+            statement.executeUpdate();
             return true;
         }
         catch (SQLException e)
@@ -70,7 +77,7 @@ public class CRUDCategory extends DataBaseConnection {
             statement = connection.prepareStatement(sql);
             statement.setString(1, category.getCategoryName());
             statement.setInt(2, category.getId());
-            statement.execute();
+            statement.executeUpdate();
             return true;
         }
         catch (SQLException e)
@@ -108,7 +115,7 @@ public class CRUDCategory extends DataBaseConnection {
             String deleteSql = "DELETE FROM Category WHERE category_id = ?";
             deleteStatement = connection.prepareStatement(deleteSql);
             deleteStatement.setInt(1, category.getId());
-            deleteStatement.execute();
+            deleteStatement.executeUpdate();
 
             return true;
 

@@ -1,4 +1,4 @@
-package university.jala.finalProject.springJPA;
+package university.jala.finalProject.springJPA.entity;
 
 import javax.persistence.*;
 import java.time.Instant;
