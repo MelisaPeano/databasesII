@@ -61,3 +61,12 @@ BEGIN
             SET MESSAGE_TEXT = 'La fecha de expiración no puede ser pasada.';
     END IF;
 END;
+
+-- Trigger 8: Crear la categoria por default --
+CREATE TRIGGER after_user_insert
+    AFTER INSERT ON AppUser
+    FOR EACH ROW
+BEGIN
+    INSERT INTO Category (user_id, category_name, category_color, created_in, is_default)
+    VALUES (NEW.user_id, 'General', '#808080', NOW(), TRUE);
+END;
