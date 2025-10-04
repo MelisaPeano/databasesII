@@ -59,9 +59,12 @@ public class CategoryServiceImpl implements CategoryService {
         if (listCount > 0) {
             throw new RuntimeException("Cannot delete, category has " + listCount + " associated lists!");
         }
-
-        categoryRepository.delete(category);
-        return true;
+        if( category.getDefault() == true) {
+            return false;
+        } else {
+            categoryRepository.delete(category);
+            return true;
+        }
     }
 
     @Override
