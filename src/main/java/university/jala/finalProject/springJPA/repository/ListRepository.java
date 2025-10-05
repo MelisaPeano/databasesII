@@ -12,18 +12,15 @@ import java.util.Optional;
 
 @Repository
 public interface ListRepository extends JpaRepository<List, Integer> {
+    Collection<List> findByCategory_Id(Integer categoryId);
 
-    // Obtener todas las listas de una categoría
-    Collection<List> findByCategoryId(Integer categoryId);
-
-    // Verificar permisos: lista pertenece a usuario a través de la categoría
     @Query("SELECT l FROM List l WHERE l.id = :listId AND l.category.userId = :userId")
     Optional<List> findByIdAndUserId(@Param("listId") Integer listId, @Param("userId") Integer userId);
 
-    // Obtener listas por categoría verificando que el usuario sea dueño
     @Query("SELECT l FROM List l WHERE l.category.id = :categoryId AND l.category.userId = :userId")
     Collection<List> findByCategoryIdAndUserId(@Param("categoryId") Integer categoryId, @Param("userId") Integer userId);
 
-    // Verificar si una lista existe en una categoría específica
-    boolean existsByIdAndCategoryId(Integer listId, Integer categoryId);
+    // USA @Query PARA MANTENER EL NOMBRE:
+    @Query("SELECT COUNT(l) > 0 FROM List l WHERE l.id = :listId AND l.category.id = :categoryId")
+    boolean existsByIdAndCategoryId(@Param("listId") Integer listId, @Param("categoryId") Integer categoryId);
 }

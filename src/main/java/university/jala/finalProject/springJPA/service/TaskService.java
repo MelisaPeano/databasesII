@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import university.jala.finalProject.springJPA.dto.*;
 import university.jala.finalProject.springJPA.entity.*;
-import university.jala.finalProject.springJPA.repo.*;
+import university.jala.finalProject.springJPA.repository.ListRepository;
+import university.jala.finalProject.springJPA.repository.TaskRepository;
+import university.jala.finalProject.springJPA.repository.TaskStatusHistoryRepository;
 
 import java.time.Instant;
 import java.util.Locale;
