@@ -1,12 +1,16 @@
 package university.jala.finalProject.springJPA.repository;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 import university.jala.finalProject.springJPA.entity.AppUser;
 
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    boolean existsByUserEmail(String userEmail);
-    Optional<AppUser> findByUserEmail(String userEmail);
+import java.util.Optional;
 
+@Repository
+public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
+
+    Optional<AppUser> findByUserEmail(String userEmail);
+    Optional<AppUser> findByUserName(String userName);
+    boolean existsByUserEmail(String userEmail);
+    boolean existsByUserName(String userName);
 }
