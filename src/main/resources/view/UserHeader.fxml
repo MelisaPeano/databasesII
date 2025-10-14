@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="university.jala.finalProject.UI.controller.UserHeaderController"
+      spacing="12" styleClass="app-header" alignment="CENTER_RIGHT" >
+    <children>
+        <Label text="Dashboard" styleClass="header-title" HBox.hgrow="ALWAYS"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="userName" styleClass="user-chip"/>
+        <Button text="Logout" onAction="#logout"/>
+    </children>
+</HBox>

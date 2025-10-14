@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import university.jala.finalProject.Main;
+import university.jala.finalProject.UI.App;
 import university.jala.finalProject.springJPA.entity.AppUser;
 import university.jala.finalProject.springJPA.service.UserService;
 
@@ -16,32 +17,36 @@ import java.io.IOException;
 @Component
 public class AuthenticationController {
 
-    @FXML
-    private StackPane contentPane;
+    @FXML private StackPane contentPane;
 
-    @Autowired
-    private UserService userService;
+    @Autowired private ConfigurableApplicationContext context;
 
     @FXML
     public void initialize() {
-        System.out.println("AuthenticationController inicializado - UserService: " + (userService != null));
+        if (contentPane == null) {
+            throw new IllegalStateException("fx:id=contentPane no inyectado (revisa authentication.fxml)");
+        }
         loadLoginForm();
     }
 
     public void loadLoginForm() {
         try {
-            ConfigurableApplicationContext context = Main.getApplicationContext();
+            var url = App.class.getResource("/view/login.fxml");
+            if (url == null) throw new IllegalStateException("Falta /view/login.fxml en el classpath");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-            loader.setControllerFactory(context::getBean);
-
+            var loader = new FXMLLoader(url);
+            loader.setControllerFactory(context::getBean);   // integración Spring + FXML
             Parent loginForm = loader.load();
-            LoginController loginController = loader.getController();
-            loginController.setAuthController(this);
+
+            var loginController = loader.getController();     // requiere fx:controller en login.fxml
+            if (loginController == null) {
+                throw new IllegalStateException("login.fxml no define fx:controller");
+            }
+            ((LoginController) loginController).setAuthController(this);
 
             contentPane.getChildren().setAll(loginForm);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo cargar login.fxml", e);
         }
     }
 
