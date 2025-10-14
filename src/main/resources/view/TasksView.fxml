@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" spacing="10" padding="15">
+    <Label text="Mis Tareas" styleClass="h1"/>
+    <TableView fx:id="taskTable" prefHeight="400">
+        <columns>
+            <TableColumn text="ID" prefWidth="70"/>
+            <TableColumn text="Título" prefWidth="240"/>
+            <TableColumn text="Estado" prefWidth="120"/>
+            <TableColumn text="Prioridad" prefWidth="100"/>
+            <TableColumn text="Expira" prefWidth="160"/>
+        </columns>
+    </TableView>
+</VBox>
