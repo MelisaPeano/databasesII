@@ -7,19 +7,15 @@ import javafx.scene.layout.StackPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import university.jala.finalProject.Main;
 import university.jala.finalProject.UI.App;
 import university.jala.finalProject.springJPA.entity.AppUser;
-import university.jala.finalProject.springJPA.service.UserService;
-
-import java.io.IOException;
 
 @Component
 public class AuthenticationController {
 
     @FXML private StackPane contentPane;
 
-    @Autowired private ConfigurableApplicationContext context;
+    @Autowired private ConfigurableApplicationContext context; // usa SIEMPRE este
 
     @FXML
     public void initialize() {
@@ -30,46 +26,39 @@ public class AuthenticationController {
     }
 
     public void loadLoginForm() {
-        try {
-            var url = App.class.getResource("/view/login.fxml");
-            if (url == null) throw new IllegalStateException("Falta /view/login.fxml en el classpath");
-
-            var loader = new FXMLLoader(url);
-            loader.setControllerFactory(context::getBean);   // integración Spring + FXML
-            Parent loginForm = loader.load();
-
-            var loginController = loader.getController();     // requiere fx:controller en login.fxml
-            if (loginController == null) {
-                throw new IllegalStateException("login.fxml no define fx:controller");
-            }
-            ((LoginController) loginController).setAuthController(this);
-
-            contentPane.getChildren().setAll(loginForm);
-        } catch (Exception e) {
-            throw new RuntimeException("No se pudo cargar login.fxml", e);
-        }
+        contentPane.getChildren().setAll(load("/view/login.fxml"));
+        // login.fxml debe tener fx:controller=... y el controller @Component
+        // y su LoginController debe llamarnos: authController.onLoginSuccess(user)
     }
 
     public void loadRegisterForm() {
-        try {
-            ConfigurableApplicationContext context = Main.getApplicationContext();
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/register.fxml"));
-            loader.setControllerFactory(context::getBean);
-
-            Parent registerForm = loader.load();
-            RegisterController registerController = loader.getController();
-            registerController.setAuthController(this);
-
-            contentPane.getChildren().setAll(registerForm);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        contentPane.getChildren().setAll(load("/view/register.fxml"));
+        // register.fxml: fx:controller correcto + Button onAction="#onRegister"
     }
 
     public void onLoginSuccess(AppUser user) {
         System.out.println("Login exitoso: " + user.getUserName());
-        //---------- creo que aquí iria la navegación al dashboard ----------
+        // Ir al Dashboard (MainLayout.fxml)
+        contentPane.getChildren().setAll(load("/view/MainLayout.fxml"));
+    }
+
+    private Parent load(String fxmlPath) {
+        try {
+            var url = App.class.getResource(fxmlPath);
+            if (url == null) throw new IllegalStateException("Falta " + fxmlPath + " en resources");
+            FXMLLoader loader = new FXMLLoader(url);
+            loader.setControllerFactory(context::getBean); // integración Spring + FXML (única fuente)
+            Parent root = loader.load();
+            // Si el controller necesita referencia a este auth, setéala si expone setAuthController(...)
+            Object ctrl = loader.getController();
+            try {
+                ctrl.getClass().getMethod("setAuthController", AuthenticationController.class)
+                        .invoke(ctrl, this);
+            } catch (NoSuchMethodException ignored) { /* opcional */ }
+            return root;
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo cargar " + fxmlPath, e);
+        }
     }
 
     public void showSuccess(String message) {

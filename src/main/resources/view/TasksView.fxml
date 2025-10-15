@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" spacing="10" padding="15">
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="university.jala.finalProject.UI.controller.TasksController"
+      spacing="10">
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
     <Label text="Mis Tareas" styleClass="h1"/>
-    <TableView fx:id="taskTable" prefHeight="400">
+    <TableView fx:id="taskTable" prefHeight="420">
         <columns>
-            <TableColumn text="ID" prefWidth="70"/>
-            <TableColumn text="Título" prefWidth="240"/>
-            <TableColumn text="Estado" prefWidth="120"/>
-            <TableColumn text="Prioridad" prefWidth="100"/>
-            <TableColumn text="Expira" prefWidth="160"/>
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colTitle" text="Título" prefWidth="250"/>
+            <TableColumn fx:id="colStatus" text="Estado" prefWidth="120"/>
+            <TableColumn fx:id="colPriority" text="Prioridad" prefWidth="110"/>
+            <TableColumn fx:id="colExpires" text="Expira" prefWidth="160"/>
         </columns>
     </TableView>
+    <HBox alignment="CENTER_RIGHT">
+        <ProgressIndicator fx:id="pi" visible="false" managed="false"/>
+    </HBox>
 </VBox>
