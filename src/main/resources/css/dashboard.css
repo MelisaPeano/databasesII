@@ -1,0 +1,9 @@
+.root { -fx-background-color: #1e1f25; }
+.sidebar { -fx-background-color: #252734; -fx-padding: 16; }
+.sidebar-title { -fx-text-fill: #cbd5e1; -fx-font-size: 14px; -fx-opacity: 0.9; }
+.button { -fx-background-radius: 10; }
+.app-header { -fx-background-color: #1b1c22; -fx-padding: 10 16; }
+.header-title { -fx-text-fill: #e2e8f0; -fx-font-size: 18px; -fx-font-weight: bold; }
+.user-chip { -fx-background-color: #2d3748; -fx-text-fill: #a0aec0; -fx-padding: 6 10; -fx-background-radius: 12; }
+.loading-overlay { -fx-background-color: rgba(0,0,0,0.45); }
+.h1 { -fx-text-fill: #e2e8f0; -fx-font-size: 20px; -fx-font-weight: bold; }

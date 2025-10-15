@@ -17,6 +17,8 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private volatile AppUser currentUser;
+
     public AppUser register(String email, String password) {
         return register(email, email, password);
     }
@@ -62,7 +64,19 @@ public class UserService {
 
     public Optional<AppUser> authenticate(String email, String password) {
         return appUserRepository.findByUserEmail(email)
-                .filter(user -> passwordEncoder.matches(password, user.getUserPassword()));
+                .filter(user -> passwordEncoder.matches(password, user.getUserPassword()))
+                .map(user -> {
+                    currentUser = user;
+                    return user;
+                });
+    }
+
+    public Optional<AppUser> getCurrentUser() {
+        return Optional.ofNullable(currentUser);
+    }
+
+    public void logout() {
+        currentUser = null;
     }
 
     public boolean emailExists(String email) {

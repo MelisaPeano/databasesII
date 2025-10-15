@@ -5,30 +5,31 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import university.jala.finalProject.Main;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
 public class App extends Application {
+    private ConfigurableApplicationContext ctx;
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        //obtiene el contexto de Spring
-        var context = Main.getApplicationContext();
+    @Override public void init() {
+        // Levantá Spring ANTES del start()
+        ctx = new SpringApplicationBuilder(Main.class).run();
+    }
 
-        //carga el FXML usando Spring
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/authentication.fxml"));
-        loader.setControllerFactory(context::getBean); //usa Spring para crear controladores
+    @Override public void start(Stage primaryStage) throws Exception {
+        var url = App.class.getResource("/view/authentication.fxml");
+        if (url == null) throw new IllegalStateException("Falta /view/authentication.fxml");
 
-        Scene scene = new Scene(loader.load(), 800, 600);
+        var loader = new FXMLLoader(url);
+        loader.setControllerFactory(ctx::getBean); // controla via Spring
+        var scene = new Scene(loader.load(), 800, 600);
+
         primaryStage.setTitle("Sistema de Gestión de Tareas");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        System.out.println("JavaFX Application started successfully!");
     }
 
-    @Override
-    public void stop() throws Exception {
-        //cierra el contexto de Spring al salir
-        Main.getApplicationContext().close();
-        super.stop();
+    @Override public void stop() {
+        if (ctx != null) ctx.close();
     }
 }
