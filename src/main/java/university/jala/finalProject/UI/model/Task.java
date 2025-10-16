@@ -9,6 +9,7 @@ public class Task {
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
     private final StringProperty status = new SimpleStringProperty();
+    private final SimpleStringProperty categoryName = new SimpleStringProperty();
 
     public int getId() { return id.get(); }
     public void setId(int value) { id.set(value); }
@@ -18,12 +19,15 @@ public class Task {
     public void setName(String value) { name.set(value); }
     public StringProperty nameProperty() { return name; }
 
-    public String getDescription() { return description.get(); }
     public void setDescription(String value) { description.set(value); }
     public StringProperty descriptionProperty() { return description; }
 
     public String getStatus() { return status.get(); }
     public void setStatus(String value) { status.set(value); }
     public StringProperty statusProperty() { return status; }
+
+    public String getCategoryName() { return categoryName.get(); }
+    public void setCategoryName(String value) { categoryName.set(value); }
+    public StringProperty categoryNameProperty() { return categoryName; }
 }
 

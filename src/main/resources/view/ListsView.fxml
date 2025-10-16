@@ -14,15 +14,18 @@
         <Button fx:id="newListButton" text="Nueva Lista" onAction="#createNewList"/>
     </HBox>
 
-    <TableView fx:id="listsTable" VBox.vgrow="ALWAYS">
+
+    <TableView fx:id="listsTable" VBox.vgrow="ALWAYS" editable="true">
         <columns>
             <TableColumn fx:id="listNameColumn" text="Nombre" prefWidth="150"/>
             <TableColumn fx:id="listDescriptionColumn" text="Descripción" prefWidth="300"/>
             <TableColumn fx:id="listDateColumn" text="Fecha de Creación" prefWidth="150"/>
+            <TableColumn fx:id="listActionsColumn" text="Acciones" prefWidth="100"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
     </TableView>
+
 
 </VBox>
