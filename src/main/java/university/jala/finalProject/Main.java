@@ -11,7 +11,6 @@ public class Main {
     private static ConfigurableApplicationContext applicationContext;
 
     public static void main(String[] args) {
-        // Lanzar JavaFX
         javafx.application.Application.launch(App.class, args);
     }
 

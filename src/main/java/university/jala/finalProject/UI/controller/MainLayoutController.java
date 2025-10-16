@@ -1,10 +1,8 @@
 package university.jala.finalProject.UI.controller;
 
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,8 +11,6 @@ import university.jala.finalProject.UI.util.ViewLoader;
 
 @Component
 public class MainLayoutController {
-    @FXML private StackPane root; // StackPane raíz (para overlay)
-    @FXML private BorderPane border; // Contenedor principal
     @FXML private StackPane centerPane; // Zona de contenido
 
 
@@ -47,6 +43,7 @@ public class MainLayoutController {
     /** Carga sincrónica (rápida) */
     public void navigateTo(String fxml) {
         showLoading(true);
+
         try {
             Node view = viewLoader.load(fxml);
             centerPane.getChildren().setAll(view);
@@ -59,14 +56,18 @@ public class MainLayoutController {
     /** Carga asíncrona (para vistas pesadas o llamadas a BD) */
     public void navigateToAsync(String fxml) {
         showLoading(true);
+        System.out.println("Cargando vista: " + fxml);
         javafx.concurrent.Task<Node> task = new javafx.concurrent.Task<>() {
             @Override protected Node call() { return viewLoader.load(fxml); }
         };
         task.setOnSucceeded(e -> {
+            System.out.println("Vista cargada correctamente: " + fxml);
             centerPane.getChildren().setAll(task.getValue());
             showLoading(false);
         });
         task.setOnFailed(e -> {
+            System.err.println("❌ Error al cargar la vista: " + fxml);
+            task.getException().printStackTrace(); // 👈 muestra la causa real
             showLoading(false);
         });
         new Thread(task, "load-" + fxml).start();

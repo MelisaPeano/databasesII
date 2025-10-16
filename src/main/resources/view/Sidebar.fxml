@@ -6,10 +6,8 @@
       prefWidth="220" spacing="8" styleClass="sidebar">
     <children>
         <Label text="Menú" styleClass="sidebar-title"/>
-        <Button text="Inicio" onAction="#goHome" maxWidth="Infinity"/>
-        <Button text="Mis Tareas" onAction="#goTasks" maxWidth="Infinity"/>
         <Separator/>
         <Button text="Categorías" onAction="#goCategories" maxWidth="Infinity"/>
-        <Button text="Listas" onAction="#goLists" maxWidth="Infinity"/>
+        <Button text="Mis Tareas" onAction="#goTasks" maxWidth="Infinity"/>
     </children>
 </VBox>

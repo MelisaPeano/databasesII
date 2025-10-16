@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="university.jala.finalProject.UI.controller.ListsController"
+      spacing="10" style="-fx-padding: 20;">
+
+    <Label fx:id="titleLabel" text="Listas de la Categoría" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="backButton" text="Volver" onAction="#goBack"/>
+        <Button fx:id="newListButton" text="Nueva Lista" onAction="#createNewList"/>
+    </HBox>
+
+    <TableView fx:id="listsTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="listNameColumn" text="Nombre" prefWidth="150"/>
+            <TableColumn fx:id="listDescriptionColumn" text="Descripción" prefWidth="300"/>
+            <TableColumn fx:id="listDateColumn" text="Fecha de Creación" prefWidth="150"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+</VBox>
