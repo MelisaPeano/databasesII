@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import university.jala.finalProject.UI.model.Task;
 import university.jala.finalProject.UI.service.TaskUIService;
+import university.jala.finalProject.springJPA.entity.AppUser;
 
 import java.util.List;
 
@@ -25,11 +26,18 @@ public class DashboardController {
     @FXML private ComboBox<String> statusFilter;
     @FXML private TextField searchField;
     @FXML private Label statsLabel;
+    private AppUser currentUser;
 
     @Autowired
     private TaskUIService taskService;
 
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
+
+    public void setCurrentUser(AppUser user) {
+        this.currentUser = user;
+        System.out.println("DashboardController - Usuario establecido: " +
+                (user != null ? user.getUserName() : "null"));
+    }
 
     @FXML
     public void initialize() {

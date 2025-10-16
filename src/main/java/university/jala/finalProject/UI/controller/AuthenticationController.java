@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import university.jala.finalProject.UI.App;
+import university.jala.finalProject.UI.service.CurrentUserService;
 import university.jala.finalProject.springJPA.entity.AppUser;
 
 @Component
@@ -16,6 +17,9 @@ public class AuthenticationController {
     @FXML private StackPane contentPane;
 
     @Autowired private ConfigurableApplicationContext context; // usa SIEMPRE este
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @FXML
     public void initialize() {
@@ -38,7 +42,10 @@ public class AuthenticationController {
 
     public void onLoginSuccess(AppUser user) {
         System.out.println("Login exitoso: " + user.getUserName());
-        // Ir al Dashboard (MainLayout.fxml)
+
+        currentUserService.setCurrentUser(user);
+
+        // Ir al Dashboard
         contentPane.getChildren().setAll(load("/view/MainLayout.fxml"));
     }
 
