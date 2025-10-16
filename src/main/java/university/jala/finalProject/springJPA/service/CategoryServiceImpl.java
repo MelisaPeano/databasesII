@@ -59,12 +59,8 @@ public class CategoryServiceImpl implements CategoryService {
         if (listCount > 0) {
             throw new RuntimeException("Cannot delete, category has " + listCount + " associated lists!");
         }
-        if( category.getDefault() == true) {
-            return false;
-        } else {
-            categoryRepository.delete(category);
-            return true;
-        }
+        categoryRepository.delete(category);
+        return true;
     }
 
     @Override
@@ -75,5 +71,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean categoryBelongsToUser(Integer categoryId, Integer userId) {
         return categoryRepository.findByIdAndUserId(categoryId, userId).isPresent();
+    }
+
+    public int countListsByCategoryId(Integer categoryId) {
+        return categoryRepository.countListsByCategoryId(categoryId);
     }
 }

@@ -11,11 +11,6 @@ public class Main {
     private static ConfigurableApplicationContext applicationContext;
 
     public static void main(String[] args) {
-        // Lanzar Spring Boot primero
-        applicationContext = new SpringApplicationBuilder(Main.class)
-                .headless(false)
-                .run(args);
-
         // Lanzar JavaFX
         javafx.application.Application.launch(App.class, args);
     }
