@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import university.jala.finalProject.UI.service.CurrentUserService;
@@ -29,7 +30,7 @@ public class CategoriesController {
     private org.springframework.context.ApplicationContext applicationContext;
 
     @Autowired
-    private CurrentUserService currentUserService; // Inyectar el servicio de sesión
+    private CurrentUserService currentUserService;
 
     private Integer currentUserId;
 
@@ -58,8 +59,32 @@ public class CategoriesController {
         setupTable();
         loadCategories();
         setupEvents();
+        categoriesTable.setOnMouseClicked(this::handleCategoryDoubleClick);
     }
+    private void handleCategoryDoubleClick(MouseEvent event) {
+        if (event.getClickCount() == 2 && categoriesTable.getSelectionModel().getSelectedItem() != null) {
+            Category selectedCategory = categoriesTable.getSelectionModel().getSelectedItem();
+            openListsView(selectedCategory);
+        }
+    }
+    private void openListsView(Category category) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ListsView.fxml"));
+            loader.setControllerFactory(applicationContext::getBean);
+            Scene scene = new Scene(loader.load());
 
+            ListsController controller = loader.getController();
+            controller.setCategory(category);
+
+            Stage stage = new Stage();
+            stage.setTitle("Listas de " + category.getName());
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void setupTable() {
         categoriesObservable = FXCollections.observableArrayList();
 
@@ -218,4 +243,5 @@ public class CategoriesController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 }

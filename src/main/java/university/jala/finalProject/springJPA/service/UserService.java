@@ -86,4 +86,15 @@ public class UserService {
     public boolean usernameExists(String username) {
         return appUserRepository.existsByUserName(username);
     }
+
+    public AppUser changePassword(String email, String newPassword) {
+
+        AppUser user = appUserRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        user.setUserPassword(passwordEncoder.encode(newPassword));
+
+        return appUserRepository.save(user);
+    }
+
 }
