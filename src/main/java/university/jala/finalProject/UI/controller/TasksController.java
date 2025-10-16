@@ -1,19 +1,26 @@
 package university.jala.finalProject.UI.controller;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import university.jala.finalProject.UI.model.Task;
+import university.jala.finalProject.springJPA.dto.TaskCreateRequest;
+import university.jala.finalProject.springJPA.service.TaskService;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class TasksController {
 
     @FXML private TableView<Task> taskTable;
-    @FXML private TableColumn<Task, Number> colId;
+    @FXML private TableColumn<Task, String> colCategory;
     @FXML private TableColumn<Task, String> colName;
     @FXML private TableColumn<Task, String> colDescription;
     @FXML private TableColumn<Task, String> colStatus;
@@ -21,16 +28,35 @@ public class TasksController {
     @FXML private TextField txtName;
     @FXML private TextField txtDescription;
     @FXML private ProgressIndicator pi;
+    @FXML private ComboBox<String> cbCategory;
+    @FXML private ComboBox<String> cbList;
+
+
+    @Autowired
+    private TaskService taskService;
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
 
     private static final String URL ="jdbc:mysql://localhost:3306/databaseii";
     private static final String USER ="melisa";
     private static final String PASS ="TuPasswordSegura";
+    private Integer currentListId;
+    private Map<String, Integer> categoryMap = new HashMap<>();
+    private Map<String, Integer> listMap = new HashMap<>();
 
     @FXML
     public void initialize() {
-        colId.setCellValueFactory(cell -> cell.getValue().idProperty());
+        loadCategories();
+
+        cbCategory.setOnAction(e -> {
+            String selectedCategory = cbCategory.getValue();
+            if (selectedCategory != null) {
+                Integer categoryId = categoryMap.get(selectedCategory);
+                loadListsByCategory(categoryId);
+            }
+        });
+
+        colCategory.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getCategoryName()));
         colName.setCellValueFactory(cell -> cell.getValue().nameProperty());
         colDescription.setCellValueFactory(cell -> cell.getValue().descriptionProperty());
         colStatus.setCellValueFactory(cell -> cell.getValue().statusProperty());
@@ -44,7 +70,8 @@ public class TasksController {
         colName.setOnEditCommit(e -> updateField(e.getRowValue(), "task_title", e.getNewValue()));
         colDescription.setOnEditCommit(e -> updateField(e.getRowValue(), "task_description", e.getNewValue()));
 
-        // Columna de estado con ComboBox
+        colStatus.setCellValueFactory(cell -> cell.getValue().statusProperty());
+
         colStatus.setCellFactory(col -> {
             TableCell<Task, String> cell = new TableCell<>() {
                 private final ComboBox<String> combo = new ComboBox<>();
@@ -54,10 +81,13 @@ public class TasksController {
                     combo.setOnAction(e -> {
                         Task task = getTableView().getItems().get(getIndex());
                         if (task != null) {
+                            String oldStatus = task.getStatus();      // guardamos el estado actual
                             String newStatus = combo.getValue();
-                            task.setStatus(newStatus);
-                            updateField(task, "task_status", newStatus);
-                            showMessage("Estado de la tarea actualizado a: " + newStatus);
+                            if (!newStatus.equals(oldStatus)) {       // solo si cambió
+                                task.setStatus(newStatus);
+                                updateField(task, "task_status", newStatus);
+                                showMessage("Estado de la tarea actualizado a: " + newStatus);
+                            }
                         }
                     });
                 }
@@ -68,7 +98,7 @@ public class TasksController {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        combo.setValue(status);
+                        combo.setValue(status != null ? status : "NEW");
                         setGraphic(combo);
                     }
                 }
@@ -76,7 +106,7 @@ public class TasksController {
             return cell;
         });
 
-        // Acciones (Eliminar)
+
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnDelete = new Button("Eliminar");
 
@@ -101,6 +131,10 @@ public class TasksController {
         taskTable.setItems(taskList);
         loadTasks();
     }
+    public void setCurrentListId(Integer listId) {
+        this.currentListId = listId;
+    }
+
 
     private void updateField(Task task, String field, String newValue) {
         String query = "UPDATE Task SET " + field + " = ? WHERE task_id = ?";
@@ -147,38 +181,44 @@ public class TasksController {
             }
         }).start();
     }
-
     @FXML
     private void onAddTask() {
-        String name = txtName.getText();
-        String desc = txtDescription.getText();
+        String name = txtName.getText().trim();
+        String desc = txtDescription.getText().trim();
+
         if (name.isBlank()) {
             showError("El nombre no puede estar vacío");
             return;
         }
 
-        String sql = "INSERT INTO Task (task_title, task_description, task_status) VALUES (?, ?, 'NEW')";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        // Obtener la lista seleccionada del ComboBox
+        String selectedListName = cbList.getValue();
+        if (selectedListName == null) {
+            showError("Seleccione una lista para la tarea");
+            return;
+        }
+        Integer listId = listMap.get(selectedListName);
 
-            ps.setString(1, name);
-            ps.setString(2, desc);
-            ps.executeUpdate();
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) {
-                Task t = new Task();
-                t.setId(keys.getInt(1));
-                t.setName(name);
-                t.setDescription(desc);
-                t.setStatus("NEW");
-                taskList.add(t);
-            }
+        TaskCreateRequest req = new TaskCreateRequest();
+        req.title = name;
+        req.description = desc;
 
+        try {
+            var created = taskService.create(listId, req);
+
+            Task t = new Task();
+            t.setId(created.id);
+            t.setName(created.title);
+            t.setDescription(created.description);
+            t.setStatus(created.status);
+
+            taskList.add(t);
             txtName.clear();
             txtDescription.clear();
             showMessage("Tarea agregada correctamente");
-        } catch (SQLException e) {
-            e.printStackTrace(); // imprime en consola el error real
+
+        } catch (Exception e) {
+            e.printStackTrace();
             showError("Error al agregar tarea: " + e.getMessage());
         }
     }
@@ -221,5 +261,42 @@ public class TasksController {
             alert.showAndWait();
         });
     }
+    private void loadCategories() {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT category_id, category_name FROM Category")) {
+
+            while (rs.next()) {
+                int id = rs.getInt("category_id");
+                String name = rs.getString("category_name");
+                categoryMap.put(name, id);
+                cbCategory.getItems().add(name);
+            }
+
+        } catch (SQLException e) {
+            showError("Error al cargar categorías");
+            e.printStackTrace();
+        }
+    }
+
+    private void loadListsByCategory(Integer categoryId) {
+        cbList.getItems().clear();
+        listMap.clear();
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = conn.prepareStatement("SELECT list_id, list_name FROM List WHERE category_id = ?")) {
+            ps.setInt(1, categoryId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("list_id");
+                String name = rs.getString("list_name");
+                listMap.put(name, id);
+                cbList.getItems().add(name);
+            }
+        } catch (SQLException e) {
+            showError("Error al cargar listas");
+            e.printStackTrace();
+        }
+    }
+
 
 }

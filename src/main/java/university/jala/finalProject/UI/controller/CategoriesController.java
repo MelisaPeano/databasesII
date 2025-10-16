@@ -201,6 +201,15 @@ public class CategoriesController {
 
             int listCount = categoryService.countListsByCategoryId(selectedCategory.getId());
 
+            if ("General".equalsIgnoreCase(selectedCategory.getName())) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Acción no permitida");
+                alert.setHeaderText(null);
+                alert.setContentText("No se puede eliminar la categoría 'General'.");
+                alert.showAndWait();
+                return;
+            }
+
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmar eliminación");
             alert.setHeaderText("¿Está seguro de eliminar esta categoría?");

@@ -15,14 +15,15 @@
 
     <!-- Formulario para agregar tareas -->
     <HBox spacing="10">
-        <TextField fx:id="txtName" promptText="Nombre de la tarea" />
-        <TextField fx:id="txtDescription" promptText="Descripción" />
+        <ComboBox fx:id="cbCategory" promptText="Seleccione categoría"/>
+        <ComboBox fx:id="cbList" promptText="Seleccione lista"/>
+        <TextField fx:id="txtName" promptText="Nombre de la tarea"/>
+        <TextField fx:id="txtDescription" promptText="Descripción"/>
         <Button text="Agregar" onAction="#onAddTask"/>
     </HBox>
-
     <TableView fx:id="taskTable" prefHeight="350" editable="true">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colCategory" text="Categoría" prefWidth="150"/>
             <TableColumn fx:id="colName" text="Nombre" prefWidth="180"/>
             <TableColumn fx:id="colDescription" text="Descripción" prefWidth="220"/>
             <TableColumn fx:id="colStatus" text="Estado" prefWidth="130"/>

@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS `AppUser` (
    user_id INT AUTO_INCREMENT UNIQUE NOT NULL PRIMARY KEY,
    user_name VARCHAR(100) NOT NULL,
@@ -22,10 +23,11 @@ CREATE TABLE IF NOT EXISTS List (
     list_description VARCHAR(255) NULL,
     created_in DATETIME,
     FOREIGN KEY (category_id) REFERENCES Category(category_id)
+
 );
 CREATE TABLE IF NOT EXISTS Task (
-   task_id INT AUTO_INCREMENT UNIQUE NOT NULL PRIMARY KEY,
-   list_id INT NOT NULL,
+    task_id INT AUTO_INCREMENT UNIQUE NOT NULL PRIMARY KEY,
+    list_id INT NOT NULL,
     task_title VARCHAR(100) NOT NULL,
     task_description TEXT NULL,
     expires_in DATETIME NULL,
@@ -33,7 +35,8 @@ CREATE TABLE IF NOT EXISTS Task (
     task_status ENUM('NEW', 'IN_PROGRESS', 'DONE', 'CANCELLED'),
     created_in DATETIME,
     completed_in DATETIME NULL,
-    FOREIGN KEY (list_id) REFERENCES List(list_id)
+    FOREIGN KEY (list_id) REFERENCES List(list_id) ON DELETE CASCADE,
+    UNIQUE (task_title, list_id)
 );
 CREATE TABLE IF NOT EXISTS Task_status (
     task_status_id INT AUTO_INCREMENT UNIQUE NOT NULL PRIMARY KEY,
