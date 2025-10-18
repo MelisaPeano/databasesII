@@ -1,3 +1,109 @@
+Manual de Usuario Técnico
+## 1. Inicio de Sesión
+
+Al iniciar la aplicación, se muestra la pantalla de Inicio de Sesión, donde el usuario debe ingresar sus credenciales:
+
+Email: dirección registrada en el sistema.
+
+Contraseña: clave asociada al usuario.
+
+## Botones disponibles:
+
+Iniciar Sesión: valida las credenciales e ingresa al panel principal.
+
+Regístrate aquí: redirige al formulario de creación de cuenta.
+
+Si el login es exitoso, se carga el panel principal con el Dashboard.
+## 2. Dashboard Principal
+
+El Dashboard es el punto central de navegación.
+Contiene un menú lateral con dos secciones principales:
+
+Categorías: permite gestionar las categorías de listas del usuario.
+
+Mis Tareas: muestra las listas y tareas asignadas.
+
+En la parte superior derecha se visualiza el nombre del usuario activo (Admin) y el botón Logout, que cierra la sesión.
+
+## 3. Gestión de Categorías
+
+Desde la sección Categorías, el usuario puede visualizar una tabla con las categorías existentes.
+Cada fila muestra:
+
+Campo:	Descripción
+Nombre:	Nombre de la categoría
+Color	Código hexadecimal del color asignado
+Fecha de Creación	Fecha en formato ISO de creación
+Número de Listas	Cantidad de listas asociadas
+
+Botones disponibles:
+
+Nueva Categoría: abre un formulario modal para crear una nueva.
+
+Editar: permite modificar el nombre o color de una categoría seleccionada.
+
+Eliminar: borra la categoría seleccionada (si no tiene dependencias activas).
+
+## 4. Creación de Categorías
+
+Al presionar Nueva Categoría, se abre una ventana modal con los campos:
+
+Nombre: nombre descriptivo de la categoría (obligatorio).
+
+Color: color en formato hexadecimal (opcional).
+
+Botones:
+
+Guardar: confirma la creación de la categoría.
+
+Cancelar: cierra el formulario sin guardar.
+
+## 5. Listas dentro de una Categoría
+
+Dentro de cada categoría, el usuario puede crear y gestionar listas personalizadas.
+
+Botones disponibles:
+
+Volver: regresa al panel anterior de categorías.
+
+Nueva Lista: abre un cuadro de diálogo que solicita el nombre de la nueva lista.
+
+Las listas se muestran en una tabla con columnas de nombre, fecha de creación y acciones disponibles.
+
+## 6. Cierre de Sesión
+
+Al presionar Logout, el sistema muestra un mensaje de agradecimiento con los nombres de los desarrolladores:
+
+“Gracias por usar nuestra app de listas
+Creadores: Ira Frias, Antonio Blinda y Melisa Peano”
+
+Luego de confirmar con OK, la aplicación se cierra automáticamente.
+
+Flujo General de Uso
+
+El usuario ingresa sus credenciales en la pantalla de login.
+
+Accede al Dashboard principal.
+
+Gestiona sus Categorías y Listas.
+
+Crea nuevas categorías o listas según necesidad.
+
+Cierra sesión desde el botón Logout, lo que finaliza la ejecución del sistema.
+
+Entorno de Ejecución
+
+Lenguaje: Java
+
+Framework: JavaFX
+
+Base de Datos: MySQL
+
+Arquitectura: MVC
+
+Versión: 1.0.0
+
+Sistema: “Sistema de Gestión de Tareas”
 # Triggers de Base de Datos
 
 Esta aplicación usa **triggers** para mantener integridad, auditar cambios y aplicar reglas de negocio directamente en la capa de datos. A continuación se documentan **qué hace cada trigger**, **cuándo se dispara**, **qué valida**, y **cómo probarlo**.
@@ -293,3 +399,52 @@ FROM information_schema.TRIGGERS
 WHERE TRIGGER_SCHEMA = DATABASE()
 ORDER BY EVENT_OBJECT_TABLE, TRIGGER_NAME;
 ```
+``` FUNCIONES```
+---
+```fn_email_canonical
+Propósito: normalizar direcciones de correo electrónico eliminando espacios y convirtiendo todo a minúsculas.
+Ayuda a evitar duplicados y errores por diferencias de formato.
+
+SELECT fn_email_canonical('  TEST@GMAIL.COM  ');
+-- Resultado: 'test@gmail.com'
+```
+---
+```fn_default_color 
+Propósito: asignar un color hexadecimal por defecto (#999999) cuando no se define uno explícitamente en categorías 
+o listas.
+```
+---
+```fn_priority_order
+Propósito: transformar una prioridad textual (LOW, MIDDLE, HIGH) en un valor numérico que permita ordenarlas
+de menor a mayor.
+SELECT fn_priority_order('HIGH');
+-- Resultado: 3
+```
+---
+```fn_status_order
+Propósito: establecer un orden lógico entre los estados de una tarea (NEW, IN_PROGRESS, DONE, CANCELLED).
+SELECT fn_status_order('in_progress');
+-- Resultado: 2
+```
+---
+## fn_is_overdue_by_dates
+```Propósito: verificar si una tarea está vencida según su fecha de expiración (expires_in) y estado (task_status).
+Una tarea se considera vencida si tiene fecha anterior a NOW() y no está marcada como DONE.
+SELECT fn_is_overdue_by_dates('2025-01-01 00:00:00', 'NEW');
+-- Resultado: 1 (si la fecha actual es posterior)
+
+```
+---
+## fn_is_overdue_by_id
+```Propósito: determinar si una tarea (por su task_id) está vencida, consultando sus datos reales en la tabla Task.
+SELECT fn_is_overdue_by_id(12);
+-- Resultado: 1 si la tarea 12 está vencida
+```
+## fn_list_owner_user_id
+```Propósito: obtener el identificador del usuario propietario de una lista (List) determinada.
+La relación se obtiene a través de la tabla Category.
+SELECT fn_list_owner_user_id(3);
+-- Resultado: 7 (id del usuario propietario)
+
+```
+

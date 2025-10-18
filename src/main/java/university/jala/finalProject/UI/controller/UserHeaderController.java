@@ -1,9 +1,11 @@
 package university.jala.finalProject.UI.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
@@ -32,15 +34,20 @@ public class UserHeaderController {
     @FXML
     public void logout() {
         userService.logout();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) userName.getScene().getWindow();
-            stage.setScene(new Scene(root));  // reemplazar la escena
-            stage.show();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Gracias");
+        alert.setHeaderText("Gracias por usar nuestra app de listas");
+        alert.setContentText("Creadores:\n• Ira Frias\n• Antonio Blinda\n• Melisa Peano");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        alert.setOnShown(event -> {
+            Stage s = (Stage) alert.getDialogPane().getScene().getWindow();
+            s.setAlwaysOnTop(true);
+        });
+
+        alert.showAndWait();
+
+        Platform.exit();
+        System.exit(0);
     }
+
 }

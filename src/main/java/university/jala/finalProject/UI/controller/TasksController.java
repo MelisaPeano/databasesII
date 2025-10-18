@@ -39,7 +39,7 @@ public class TasksController {
 
     private static final String URL ="jdbc:mysql://localhost:3306/databaseii";
     private static final String USER ="melisa";
-    private static final String PASS ="TuPassAquiMiPana";
+    private static final String PASS ="TuPasswordSegura";
     private Integer currentListId;
     private Map<String, Integer> categoryMap = new HashMap<>();
     private Map<String, Integer> listMap = new HashMap<>();
