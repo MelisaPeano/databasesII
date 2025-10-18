@@ -1,4 +1,4 @@
-Manual de Usuario Técnico
+## Manual de Usuario Técnico
 ## 1. Inicio de Sesión
 
 Al iniciar la aplicación, se muestra la pantalla de Inicio de Sesión, donde el usuario debe ingresar sus credenciales:
@@ -401,7 +401,8 @@ ORDER BY EVENT_OBJECT_TABLE, TRIGGER_NAME;
 ```
 ``` FUNCIONES```
 ---
-```fn_email_canonical
+## fn_email_canonical
+```
 Propósito: normalizar direcciones de correo electrónico eliminando espacios y convirtiendo todo a minúsculas.
 Ayuda a evitar duplicados y errores por diferencias de formato.
 
@@ -409,26 +410,30 @@ SELECT fn_email_canonical('  TEST@GMAIL.COM  ');
 -- Resultado: 'test@gmail.com'
 ```
 ---
-```fn_default_color 
+## fn_default_color
+```
 Propósito: asignar un color hexadecimal por defecto (#999999) cuando no se define uno explícitamente en categorías 
 o listas.
 ```
 ---
-```fn_priority_order
+## fn_priority_order
+```
 Propósito: transformar una prioridad textual (LOW, MIDDLE, HIGH) en un valor numérico que permita ordenarlas
 de menor a mayor.
 SELECT fn_priority_order('HIGH');
 -- Resultado: 3
 ```
 ---
-```fn_status_order
+## fn_status_order
+```
 Propósito: establecer un orden lógico entre los estados de una tarea (NEW, IN_PROGRESS, DONE, CANCELLED).
 SELECT fn_status_order('in_progress');
 -- Resultado: 2
 ```
 ---
 ## fn_is_overdue_by_dates
-```Propósito: verificar si una tarea está vencida según su fecha de expiración (expires_in) y estado (task_status).
+```
+Propósito: verificar si una tarea está vencida según su fecha de expiración (expires_in) y estado (task_status).
 Una tarea se considera vencida si tiene fecha anterior a NOW() y no está marcada como DONE.
 SELECT fn_is_overdue_by_dates('2025-01-01 00:00:00', 'NEW');
 -- Resultado: 1 (si la fecha actual es posterior)
@@ -436,12 +441,14 @@ SELECT fn_is_overdue_by_dates('2025-01-01 00:00:00', 'NEW');
 ```
 ---
 ## fn_is_overdue_by_id
-```Propósito: determinar si una tarea (por su task_id) está vencida, consultando sus datos reales en la tabla Task.
+```
+Propósito: determinar si una tarea (por su task_id) está vencida, consultando sus datos reales en la tabla Task.
 SELECT fn_is_overdue_by_id(12);
 -- Resultado: 1 si la tarea 12 está vencida
 ```
 ## fn_list_owner_user_id
-```Propósito: obtener el identificador del usuario propietario de una lista (List) determinada.
+```
+Propósito: obtener el identificador del usuario propietario de una lista (List) determinada.
 La relación se obtiene a través de la tabla Category.
 SELECT fn_list_owner_user_id(3);
 -- Resultado: 7 (id del usuario propietario)
