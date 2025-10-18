@@ -39,7 +39,7 @@ public class TasksController {
 
     private static final String URL ="jdbc:mysql://localhost:3306/databaseii";
     private static final String USER ="melisa";
-    private static final String PASS ="TuPasswordSegura";
+    private static final String PASS ="TuPassAquiMiPana";
     private Integer currentListId;
     private Map<String, Integer> categoryMap = new HashMap<>();
     private Map<String, Integer> listMap = new HashMap<>();
@@ -157,24 +157,50 @@ public class TasksController {
         taskList.clear();
 
         new Thread(() -> {
-            try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT task_id, task_title, task_description, task_status FROM Task")) {
+            final String SQL_ALL =
+                    "SELECT t.task_id, t.task_title, t.task_description, t.task_status, " +
+                            "       c.category_name AS category_name " +
+                            "FROM Task t " +
+                            "JOIN List l ON l.list_id = t.list_id " +
+                            "JOIN Category c ON c.category_id = l.category_id " +
+                            "ORDER BY t.task_id";
 
-                while (rs.next()) {
-                    Task t = new Task();
-                    t.setId(rs.getInt("task_id"));
-                    t.setName(rs.getString("task_title"));
-                    t.setDescription(rs.getString("task_description"));
-                    t.setStatus(rs.getString("task_status"));
-                    taskList.add(t);
+            final String SQL_BY_LIST =
+                    "SELECT t.task_id, t.task_title, t.task_description, t.task_status, " +
+                            "       c.category_name AS category_name " +
+                            "FROM Task t " +
+                            "JOIN List l ON l.list_id = t.list_id " +
+                            "JOIN Category c ON c.category_id = l.category_id " +
+                            "WHERE t.list_id = ? " +
+                            "ORDER BY t.task_id";
+
+            try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+                 PreparedStatement ps = (currentListId != null)
+                         ? conn.prepareStatement(SQL_BY_LIST)
+                         : conn.prepareStatement(SQL_ALL)) {
+
+                if (currentListId != null) {
+                    ps.setInt(1, currentListId);
+                }
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Task t = new Task();
+                        t.setId(rs.getInt("task_id"));
+                        t.setName(rs.getString("task_title"));
+                        t.setDescription(rs.getString("task_description"));
+                        t.setStatus(rs.getString("task_status"));
+                        t.setCategoryName(rs.getString("category_name")); // <-- ahora sí existe
+                        taskList.add(t);
+                    }
                 }
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                showError("Error al cargar tareas");
+                showError("Error al cargar tareas: " + e.getMessage());
             } finally {
                 javafx.application.Platform.runLater(() -> {
+                    taskTable.setItems(taskList);
                     pi.setVisible(false);
                     pi.setManaged(false);
                 });
@@ -211,6 +237,7 @@ public class TasksController {
             t.setName(created.title);
             t.setDescription(created.description);
             t.setStatus(created.status);
+            t.setCategoryName(cbCategory.getValue() != null ? cbCategory.getValue() : "");
 
             taskList.add(t);
             txtName.clear();
@@ -224,8 +251,8 @@ public class TasksController {
     }
 
     private void deleteTask(Task task) {
-        String deleteStatusSql = "DELETE FROM task_status WHERE task_id = ?";
-        String deleteTaskSql = "DELETE FROM task WHERE task_id = ?";
+        String deleteStatusSql = "DELETE FROM Task_status WHERE task_id = ?";
+        String deleteTaskSql   = "DELETE FROM Task WHERE task_id = ?";
         try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
             try (PreparedStatement ps1 = conn.prepareStatement(deleteStatusSql)) {
                 ps1.setInt(1, task.getId());
