@@ -455,3 +455,465 @@ SELECT fn_list_owner_user_id(3);
 
 ```
 
+📘 Documentación de Vistas SQL
+1. Vista: UserLists
+
+Descripción:
+Esta vista muestra la relación entre los usuarios, sus categorías y las listas que pertenecen a cada categoría. Permite visualizar la jerarquía de información desde el usuario hasta las listas creadas.
+
+Propósito:
+Facilitar la consulta de las listas creadas por cada usuario, organizadas por categoría.
+
+Tablas involucradas:
+AppUser, Category, List
+
+Campos devueltos:
+
+Campo	Descripción
+User_Name	Nombre del usuario
+Category	Nombre de la categoría perteneciente al usuario
+List	Nombre de la lista creada en esa categoría
+Created_In	Fecha en que la lista fue creada
+
+Consulta SQL:
+
+CREATE VIEW UserLists AS
+SELECT U.user_name AS User_Name, C.category_name AS Category, L.list_name AS List, L.created_in AS Created_In
+FROM AppUser U
+JOIN Category C ON U.user_id = C.user_id
+JOIN List L ON C.category_id = L.category_id;
+
+2. Vista: UserCategoryCount
+
+Descripción:
+Muestra el número total de categorías creadas por cada usuario registrado en el sistema.
+
+Propósito:
+Permitir un conteo rápido de las categorías que posee cada usuario para análisis o reportes.
+
+Tablas involucradas:
+AppUser, Category
+
+Campos devueltos:
+
+Campo	Descripción
+user_id	Identificador único del usuario
+user_name	Nombre del usuario
+total_categories	Cantidad total de categorías asociadas al usuario
+
+Consulta SQL:
+
+CREATE VIEW UserCategoryCount AS
+SELECT U.user_id, U.user_name, COUNT(C.category_id) AS total_categories
+FROM AppUser U
+LEFT JOIN Category C ON U.user_id = C.user_id
+GROUP BY U.user_id, U.user_name;
+
+3. Vista: ListTaskCount
+
+Descripción:
+Muestra cada lista registrada en el sistema junto con el número total de tareas que contiene.
+
+Propósito:
+Brindar una visión general del nivel de actividad o cantidad de tareas por lista.
+
+Tablas involucradas:
+List, Task
+
+Campos devueltos:
+
+Campo	Descripción
+list_id	Identificador de la lista
+list_name	Nombre de la lista
+total_tasks	Número total de tareas asociadas
+
+Consulta SQL:
+
+CREATE VIEW ListTaskCount AS
+SELECT L.list_id, L.list_name, COUNT(T.task_id) AS total_tasks
+FROM List L
+LEFT JOIN Task T ON L.list_id = T.list_id
+GROUP BY L.list_id, L.list_name;
+
+4. Vista: PendingTasksByUser
+
+Descripción:
+Muestra las tareas que se encuentran pendientes o en progreso, organizadas por usuario.
+
+Propósito:
+Permitir identificar fácilmente las tareas activas que aún no se han completado por cada usuario.
+
+Tablas involucradas:
+AppUser, Category, List, Task
+
+Campos devueltos:
+
+Campo	Descripción
+user_name	Nombre del usuario responsable
+task_title	Título de la tarea
+task_status	Estado actual de la tarea (NEW o IN_PROGRESS)
+expires_in	Fecha límite o vencimiento de la tarea
+
+Consulta SQL:
+
+CREATE VIEW PendingTasksByUser AS
+SELECT U.user_name, T.task_title, T.task_status, T.expires_in
+FROM AppUser U
+JOIN Category C ON U.user_id = C.user_id
+JOIN List L ON C.category_id = L.category_id
+JOIN Task T ON L.list_id = T.list_id
+WHERE T.task_status IN ('NEW', 'IN_PROGRESS');
+
+5. Vista: OverdueTasks
+
+Descripción:
+Muestra las tareas que están vencidas (fecha de expiración anterior a la actual) y que aún no se han marcado como completadas.
+
+Propósito:
+Ayudar a detectar y dar seguimiento a tareas atrasadas o no resueltas dentro del sistema.
+
+Tablas involucradas:
+AppUser, Category, List, Task
+
+Campos devueltos:
+
+Campo	Descripción
+user_name	Nombre del usuario responsable
+task_title	Título de la tarea
+expires_in	Fecha de vencimiento de la tarea
+task_status	Estado actual de la tarea
+
+Consulta SQL:
+
+CREATE VIEW OverdueTasks AS
+SELECT U.user_name, T.task_title, T.expires_in, T.task_status
+FROM AppUser U
+JOIN Category C ON U.user_id = C.user_id
+JOIN List L ON C.category_id = L.category_id
+JOIN Task T ON L.list_id = T.list_id
+WHERE T.expires_in < NOW() AND T.task_status <> 'DONE';
+
+⚙️ Documentación de Procedimientos Almacenados
+1. Procedimiento: sp_create_user
+
+Descripción:
+Crea un nuevo usuario en el sistema asegurando que el correo electrónico no esté duplicado.
+
+Propósito:
+Registrar nuevos usuarios con validación de email único y formato canónico.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_user_name	Nombre del usuario
+IN	p_user_email	Correo electrónico del usuario
+IN	p_user_pass	Contraseña del usuario
+OUT	p_user_id	ID generado para el nuevo usuario
+
+Validaciones:
+
+Verifica que el correo no exista previamente.
+
+Si el correo ya está registrado, lanza el error 'Email ya registrado'.
+
+Tablas afectadas:
+AppUser
+
+Resultado:
+Inserta un nuevo registro en AppUser y devuelve su user_id.
+
+2. Procedimiento: sp_create_category
+
+Descripción:
+Crea una nueva categoría asociada a un usuario existente.
+
+Propósito:
+Permitir que los usuarios organicen sus listas mediante categorías personalizadas.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_user_id	ID del usuario dueño de la categoría
+IN	p_name	Nombre de la categoría
+IN	p_color	Color asignado (hexadecimal)
+OUT	p_category_id	ID de la categoría creada
+
+Validaciones:
+
+Verifica que el usuario exista.
+
+Si no se especifica color, se asigna uno por defecto (fn_default_color()).
+
+Evita nombres de categoría duplicados para el mismo usuario.
+
+Tablas afectadas:
+Category
+
+Resultado:
+Inserta una nueva categoría y devuelve su ID.
+
+3. Procedimiento: sp_create_list
+
+Descripción:
+Crea una lista dentro de una categoría específica.
+
+Propósito:
+Agregar nuevas listas de tareas en una categoría existente.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_category_id	ID de la categoría
+IN	p_name	Nombre de la lista
+IN	p_desc	Descripción de la lista
+OUT	p_list_id	ID generado para la lista
+
+Validaciones:
+
+Comprueba que la categoría exista.
+
+Impide nombres de lista duplicados dentro de la misma categoría.
+
+Tablas afectadas:
+List
+
+Resultado:
+Inserta una nueva lista y retorna su ID.
+
+4. Procedimiento: sp_create_task
+
+Descripción:
+Crea una nueva tarea dentro de una lista determinada.
+
+Propósito:
+Registrar tareas con prioridad, fecha de vencimiento y descripción.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_list_id	ID de la lista contenedora
+IN	p_title	Título de la tarea
+IN	p_desc	Descripción de la tarea
+IN	p_expires	Fecha de vencimiento
+IN	p_priority	Nivel de prioridad (LOW, MIDDLE, HIGH)
+OUT	p_task_id	ID generado para la tarea
+
+Validaciones:
+
+Verifica que la lista exista.
+
+La prioridad se normaliza a mayúsculas y por defecto es LOW.
+
+La fecha de vencimiento no puede ser anterior al momento actual.
+
+Tablas afectadas:
+Task
+
+Resultado:
+Inserta una nueva tarea con estado inicial 'NEW'.
+
+5. Procedimiento: sp_update_task
+
+Descripción:
+Actualiza los datos de una tarea existente.
+
+Propósito:
+Modificar título, descripción, prioridad o fecha de expiración de una tarea.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_task_id	ID de la tarea a modificar
+IN	p_title	Nuevo título
+IN	p_desc	Nueva descripción
+IN	p_expires	Nueva fecha de vencimiento
+IN	p_priority	Nueva prioridad
+
+Validaciones:
+
+Verifica que la tarea exista.
+
+La fecha no puede ser anterior al presente.
+
+La prioridad debe ser válida (LOW, MIDDLE, HIGH).
+
+Tablas afectadas:
+Task
+
+Resultado:
+Actualiza los campos especificados de la tarea.
+
+6. Procedimiento: sp_change_task_status
+
+Descripción:
+Cambia el estado de una tarea existente y opcionalmente agrega un comentario.
+
+Propósito:
+Actualizar el flujo de trabajo de una tarea (nuevo, en progreso, finalizado, cancelado).
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_task_id	ID de la tarea
+IN	p_new_status	Nuevo estado (NEW, IN_PROGRESS, DONE, CANCELLED)
+IN	p_comment	Comentario opcional
+
+Validaciones:
+
+La tarea debe existir.
+
+El estado nuevo debe ser válido.
+
+Tablas afectadas:
+Task, Task_status
+
+Resultado:
+Actualiza el estado y, si aplica, el último comentario.
+
+7. Procedimiento: sp_move_task
+
+Descripción:
+Mueve una tarea de una lista a otra dentro del mismo usuario.
+
+Propósito:
+Reorganizar tareas entre listas del mismo propietario.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_task_id	ID de la tarea a mover
+IN	p_target_list_id	ID de la lista destino
+
+Validaciones:
+
+La tarea y la lista destino deben existir.
+
+Ambas listas deben pertenecer al mismo usuario.
+
+Tablas afectadas:
+Task
+
+Resultado:
+La tarea es reasignada a la lista destino.
+
+8. Procedimiento: sp_delete_task
+
+Descripción:
+Elimina una tarea junto con su historial de estados.
+
+Propósito:
+Realizar un borrado seguro de tareas.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_task_id	ID de la tarea a eliminar
+
+Tablas afectadas:
+Task_status, Task
+
+Resultado:
+Elimina la tarea y sus registros asociados mediante transacción.
+
+9. Procedimiento: sp_delete_list
+
+Descripción:
+Elimina una lista y todas las tareas que contiene.
+
+Propósito:
+Borrar una lista completa junto con su información relacionada.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_list_id	ID de la lista a eliminar
+
+Tablas afectadas:
+Task_status, Task, List
+
+Resultado:
+Elimina todos los datos asociados en una transacción segura.
+
+10. Procedimiento: sp_delete_category
+
+Descripción:
+Elimina una categoría junto con sus listas y tareas asociadas.
+
+Propósito:
+Realizar un borrado seguro y completo de una categoría del usuario.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_category_id	ID de la categoría a eliminar
+
+Tablas afectadas:
+Task_status, Task, List, Category
+
+Resultado:
+Elimina la categoría y todas las entidades relacionadas.
+
+11. Procedimiento: sp_list_tasks
+
+Descripción:
+Devuelve un listado filtrado de tareas según distintos criterios.
+
+Propósito:
+Obtener tareas de un usuario con filtros por categoría, lista, estado, prioridad o texto.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_user_id	ID del usuario
+IN	p_category_id	ID de la categoría (opcional)
+IN	p_list_id	ID de la lista (opcional)
+IN	p_status	Estado de la tarea
+IN	p_priority	Prioridad
+IN	p_due_from	Fecha de vencimiento inicial
+IN	p_due_to	Fecha de vencimiento final
+IN	p_query	Texto a buscar
+
+Tablas consultadas:
+Task, List, Category
+
+Resultado:
+Devuelve las tareas filtradas, ordenadas por vencimiento, prioridad y estado.
+
+12. Procedimiento: sp_get_dashboard_counts
+
+Descripción:
+Obtiene métricas y conteos de tareas para mostrar en el panel principal (dashboard).
+
+Propósito:
+Proveer estadísticas sobre el estado actual de las tareas del usuario.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_user_id	ID del usuario
+
+Tablas consultadas:
+Task, List, Category
+
+Resultado:
+Devuelve totales de tareas, clasificadas por estado, vencidas y del día actual.
+
+13. Procedimiento: sp_tasks_next_due
+
+Descripción:
+Muestra las próximas tareas que vencerán para un usuario.
+
+Propósito:
+Proporcionar una vista rápida de las tareas más urgentes pendientes.
+
+Parámetros:
+
+Tipo	Nombre	Descripción
+IN	p_user_id	ID del usuario
+IN	p_limit	Límite de tareas a mostrar (por defecto 10)
+
+Tablas consultadas:
+Task, List, Category
+
+Resultado:
+Devuelve las tareas no completadas, ordenadas por fecha de vencimiento ascendente.
