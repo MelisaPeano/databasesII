@@ -1,5 +1,8 @@
+-- Poblar AppUser
 INSERT INTO AppUser (user_name, user_email, user_password, created_in)
-VALUES ('Admin', 'admin@example.com', '$2a$10$abcdefghijklmnopqrstuO5QZ7Nq6aF5bC3dE1fG2hI4jK6lM8nO0pQ2', NOW());
+VALUES
+    ('Admin', 'admin@example.com', '$2a$10$abcdefghijklmnopqrstuO5QZ7Nq6aF5bC3dE1fG2hI4jK6lM8nO0pQ2', NOW());
+
 -- Poblar Category
 INSERT INTO Category (user_id, category_name, category_color, created_in, is_default)
 VALUES
@@ -9,8 +12,8 @@ VALUES
     (1, 'Hogar', '#F1C40F', NOW(), FALSE),
     (1, 'Fitness', '#9B59B6', NOW(), FALSE);
 
--- Poblar List
-INSERT INTO List (category_id, list_name, list_description, created_in)
+-- Poblar ListTable (👈 actualizado)
+INSERT INTO ListTable (category_id, list_name, list_description, created_in)
 VALUES
     (1, 'Backend', 'Tareas del backend', NOW()),
     (1, 'Frontend', 'Interfaz del proyecto', NOW()),

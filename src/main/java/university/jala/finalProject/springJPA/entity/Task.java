@@ -13,7 +13,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "list_id", nullable = false)
-    private List list;
+    private ListTable listTable;
 
     @Column(name = "task_title", nullable = false, length = 100)
     private String title;
@@ -39,7 +39,7 @@ public class Task {
     private Instant completedIn;
 
     public Integer getId() { return id; }
-    public List getList() { return list; }
+    public ListTable getList() { return listTable; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public Instant getExpiresIn() { return expiresIn; }
@@ -49,7 +49,7 @@ public class Task {
     public Instant getCompletedIn() { return completedIn; }
 
     public void setId(Integer id) { this.id = id; }
-    public void setList(List list) { this.list = list; }
+    public void setList(ListTable listTable) { this.listTable = listTable; }
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
     public void setExpiresIn(Instant expiresIn) { this.expiresIn = expiresIn; }
@@ -57,4 +57,5 @@ public class Task {
     public void setStatus(TaskState status) { this.status = status; }
     public void setCreatedIn(Instant createdIn) { this.createdIn = createdIn; }
     public void setCompletedIn(Instant completedIn) { this.completedIn = completedIn; }
+
 }

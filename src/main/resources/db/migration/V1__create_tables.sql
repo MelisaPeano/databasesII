@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Category (
     FOREIGN KEY (user_id) REFERENCES AppUser(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS List (
+CREATE TABLE IF NOT EXISTS ListTable (
     list_id INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
     category_id INT NOT NULL,
     list_name VARCHAR(60) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS Task (
     task_status ENUM('NEW', 'IN_PROGRESS', 'DONE', 'CANCELLED'),
     created_in DATETIME,
     completed_in DATETIME NULL,
-    FOREIGN KEY (list_id) REFERENCES List(list_id) ON DELETE CASCADE,
+    FOREIGN KEY (list_id) REFERENCES ListTable(list_id) ON DELETE CASCADE,
     UNIQUE (task_title, list_id)
 );
 CREATE TABLE IF NOT EXISTS Task_status (

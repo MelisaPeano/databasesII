@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import university.jala.finalProject.springJPA.entity.List;
+import university.jala.finalProject.springJPA.entity.ListTable;
 import university.jala.finalProject.springJPA.entity.Category;
 import university.jala.finalProject.springJPA.repository.ListRepository;
 
@@ -20,22 +20,22 @@ import java.util.Collection;
 @Controller
 public class ListsController {
     @FXML
-    private TableColumn<List, Void> listActionsColumn;
+    private TableColumn<ListTable, Void> listActionsColumn;
 
     @FXML
     private Label titleLabel;
 
     @FXML
-    private TableView<List> listsTable;
+    private TableView<ListTable> listsTable;
 
     @FXML
-    private TableColumn<List, String> listNameColumn;
+    private TableColumn<ListTable, String> listNameColumn;
 
     @FXML
-    private TableColumn<List, String> listDescriptionColumn;
+    private TableColumn<ListTable, String> listDescriptionColumn;
 
     @FXML
-    private TableColumn<List, String> listDateColumn;
+    private TableColumn<ListTable, String> listDateColumn;
 
     @Autowired
     private ListRepository listRepository;
@@ -74,15 +74,15 @@ public class ListsController {
         listDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         listNameColumn.setOnEditCommit(e -> {
-            List listEntity = e.getRowValue(); // <-- tu entidad
-            listEntity.setListName(e.getNewValue());
-            listRepository.save(listEntity);
+            ListTable listTable = e.getRowValue(); // <-- tu entidad
+            listTable.setListName(e.getNewValue());
+            listRepository.save(listTable);
         });
 
         listDescriptionColumn.setOnEditCommit(e -> {
-            List listEntity = e.getRowValue(); // <-- tu entidad
-            listEntity.setListDescription(e.getNewValue());
-            listRepository.save(listEntity);
+            ListTable listTable = e.getRowValue(); // <-- tu entidad
+            listTable.setListDescription(e.getNewValue());
+            listRepository.save(listTable);
         });
 
 // Botones de acciones
@@ -91,9 +91,9 @@ public class ListsController {
 
             {
                 deleteBtn.setOnAction(e -> {
-                    List listEntity = getTableView().getItems().get(getIndex());
+                    ListTable listTable = getTableView().getItems().get(getIndex());
 
-                    if (listEntity.getTasks() != null && !listEntity.getTasks().isEmpty()) {
+                    if (listTable.getTasks() != null && !listTable.getTasks().isEmpty()) {
                         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                         alert.setTitle("Confirmar eliminación");
                         alert.setHeaderText("La lista tiene tareas asociadas");
@@ -101,14 +101,14 @@ public class ListsController {
 
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
-                                listRepository.delete(listEntity);
-                                getTableView().getItems().remove(listEntity);
+                                listRepository.delete(listTable);
+                                getTableView().getItems().remove(listTable);
                             }
                         });
                     } else {
                         // Sin tareas, eliminar directamente
-                        listRepository.delete(listEntity);
-                        getTableView().getItems().remove(listEntity);
+                        listRepository.delete(listTable);
+                        getTableView().getItems().remove(listTable);
                     }
                 });
             }
@@ -122,8 +122,8 @@ public class ListsController {
     }
     private void loadLists() {
         if (category != null) {
-            Collection<List> lists = listRepository.findByCategory_IdWithTasks(category.getId());
-            listsTable.getItems().setAll(lists);
+            Collection<ListTable> listEntities = listRepository.findByCategory_IdWithTasks(category.getId());
+            listsTable.getItems().setAll(listEntities);
         }
     }
 
@@ -142,12 +142,12 @@ public class ListsController {
 
         dialog.showAndWait().ifPresent(name -> {
             if (!name.isBlank()) {
-                List newList = new List();
-                newList.setListName(name);
-                newList.setCategory(category);
-                newList.setCreatedIn(java.time.Instant.now());
-                listRepository.save(newList);
-                listsTable.getItems().add(newList);
+                ListTable newListTable = new ListTable();
+                newListTable.setListName(name);
+                newListTable.setCategory(category);
+                newListTable.setCreatedIn(java.time.Instant.now());
+                listRepository.save(newListTable);
+                listsTable.getItems().add(newListTable);
             }
         });
     }

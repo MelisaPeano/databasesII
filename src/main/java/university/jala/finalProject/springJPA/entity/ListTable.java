@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "List", schema = "databaseii")
-public class List {
+@Table(name = "ListTable", schema = "databaseii")
+public class ListTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class List {
     @Column(name = "created_in")
     private Instant createdIn;
 
-    @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "listTable" , cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Task> tasks = new java.util.ArrayList<>();
 
     public Integer getId() { return id; }

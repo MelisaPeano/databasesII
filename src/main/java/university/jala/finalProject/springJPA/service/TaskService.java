@@ -57,16 +57,16 @@ public class TaskService {
 
     @Transactional
     public TaskResponse create(Integer listId, TaskCreateRequest req) {
-        university.jala.finalProject.springJPA.entity.List taskList =
+        ListTable taskListTable =
                 listRepo.findById(listId)
                         .orElseThrow(() -> new IllegalArgumentException("Lista no encontrada"));
 
-        if (taskRepo.existsByList_IdAndTitleIgnoreCase(listId, req.title)) {
+        if (taskRepo.existsByListTable_IdAndTitleIgnoreCase(listId, req.title)) {
             throw new IllegalStateException("Ya existe una tarea con ese nombre en la lista");
         }
 
         Task t = new Task();
-        t.setList(taskList);
+        t.setList(taskListTable);
         t.setTitle(req.title);
         t.setDescription(req.description);
         t.setPriority(parsePriority(req.priority));
@@ -90,8 +90,8 @@ public class TaskService {
     public java.util.List<TaskResponse> list(Integer listId, String statusOpt) {
         TaskState st = parseStatus(statusOpt);
         java.util.List<Task> items = (st == null)
-                ? taskRepo.findByList_Id(listId)
-                : taskRepo.findByList_IdAndStatus(listId, st);
+                ? taskRepo.findByListTable_Id(listId)
+                : taskRepo.findByListTable_IdAndStatus(listId, st);
         return items.stream().map(this::toResponse).collect(java.util.stream.Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public class TaskService {
                 .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada"));
 
         if (req.title != null && !req.title.equalsIgnoreCase(t.getTitle())) {
-            if (taskRepo.existsByList_IdAndTitleIgnoreCase(t.getList().getId(), req.title)) {
+            if (taskRepo.existsByListTable_IdAndTitleIgnoreCase(t.getList().getId(), req.title)) {
                 throw new IllegalStateException("Ya existe una tarea con ese nombre en la lista");
             }
             t.setTitle(req.title);

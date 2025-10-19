@@ -80,7 +80,7 @@ public class DashboardController {
     }
 
     private void loadTasks() {
-        List<Task> tasks = taskService.getAllTasks(); // devuelve lista
+        List<Task> tasks = taskService.getAllTasks();
         taskList.setAll(tasks);
         taskTable.setItems(taskList);
         updateStats();

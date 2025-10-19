@@ -455,19 +455,20 @@ SELECT fn_list_owner_user_id(3);
 
 ```
 
-📘 Documentación de Vistas SQL
-1. Vista: UserLists
+## 📘 Documentación de Vistas SQL
+---
+## 1. Vista: UserLists
 
 Descripción:
 Esta vista muestra la relación entre los usuarios, sus categorías y las listas que pertenecen a cada categoría. Permite visualizar la jerarquía de información desde el usuario hasta las listas creadas.
 
-Propósito:
+## Propósito:
 Facilitar la consulta de las listas creadas por cada usuario, organizadas por categoría.
 
 Tablas involucradas:
 AppUser, Category, List
 
-Campos devueltos:
+## Campos devueltos:
 
 Campo	Descripción
 User_Name	Nombre del usuario
@@ -475,7 +476,7 @@ Category	Nombre de la categoría perteneciente al usuario
 List	Nombre de la lista creada en esa categoría
 Created_In	Fecha en que la lista fue creada
 
-Consulta SQL:
+## Consulta SQL:
 
 CREATE VIEW UserLists AS
 SELECT U.user_name AS User_Name, C.category_name AS Category, L.list_name AS List, L.created_in AS Created_In
@@ -483,7 +484,9 @@ FROM AppUser U
 JOIN Category C ON U.user_id = C.user_id
 JOIN List L ON C.category_id = L.category_id;
 
-2. Vista: UserCategoryCount
+---
+---
+## 2. Vista: UserCategoryCount
 
 Descripción:
 Muestra el número total de categorías creadas por cada usuario registrado en el sistema.
@@ -508,9 +511,11 @@ SELECT U.user_id, U.user_name, COUNT(C.category_id) AS total_categories
 FROM AppUser U
 LEFT JOIN Category C ON U.user_id = C.user_id
 GROUP BY U.user_id, U.user_name;
+---
+---
 
-3. Vista: ListTaskCount
-
+## 3. Vista: ListTaskCount
+```
 Descripción:
 Muestra cada lista registrada en el sistema junto con el número total de tareas que contiene.
 
@@ -534,9 +539,12 @@ SELECT L.list_id, L.list_name, COUNT(T.task_id) AS total_tasks
 FROM List L
 LEFT JOIN Task T ON L.list_id = T.list_id
 GROUP BY L.list_id, L.list_name;
+```
+---
+---
 
-4. Vista: PendingTasksByUser
-
+## 4. Vista: PendingTasksByUser
+```
 Descripción:
 Muestra las tareas que se encuentran pendientes o en progreso, organizadas por usuario.
 
@@ -563,9 +571,12 @@ JOIN Category C ON U.user_id = C.user_id
 JOIN List L ON C.category_id = L.category_id
 JOIN Task T ON L.list_id = T.list_id
 WHERE T.task_status IN ('NEW', 'IN_PROGRESS');
+```
+---
+---
 
-5. Vista: OverdueTasks
-
+## 5. Vista: OverdueTasks
+````
 Descripción:
 Muestra las tareas que están vencidas (fecha de expiración anterior a la actual) y que aún no se han marcado como completadas.
 
@@ -592,9 +603,12 @@ JOIN Category C ON U.user_id = C.user_id
 JOIN List L ON C.category_id = L.category_id
 JOIN Task T ON L.list_id = T.list_id
 WHERE T.expires_in < NOW() AND T.task_status <> 'DONE';
-
-⚙️ Documentación de Procedimientos Almacenados
-1. Procedimiento: sp_create_user
+````
+---
+---
+## ⚙️ Documentación de Procedimientos Almacenados
+---
+## 1. Procedimiento: sp_create_user
 
 Descripción:
 Crea un nuevo usuario en el sistema asegurando que el correo electrónico no esté duplicado.
@@ -621,16 +635,18 @@ AppUser
 
 Resultado:
 Inserta un nuevo registro en AppUser y devuelve su user_id.
+---
+---
 
-2. Procedimiento: sp_create_category
+## 2. Procedimiento: sp_create_category
 
-Descripción:
+# Descripción:
 Crea una nueva categoría asociada a un usuario existente.
 
-Propósito:
+# Propósito:
 Permitir que los usuarios organicen sus listas mediante categorías personalizadas.
 
-Parámetros:
+# Parámetros:
 
 Tipo	Nombre	Descripción
 IN	p_user_id	ID del usuario dueño de la categoría
@@ -638,7 +654,7 @@ IN	p_name	Nombre de la categoría
 IN	p_color	Color asignado (hexadecimal)
 OUT	p_category_id	ID de la categoría creada
 
-Validaciones:
+# Validaciones:
 
 Verifica que el usuario exista.
 
@@ -651,8 +667,10 @@ Category
 
 Resultado:
 Inserta una nueva categoría y devuelve su ID.
+---
+---
 
-3. Procedimiento: sp_create_list
+## Procedimiento: sp_create_list
 
 Descripción:
 Crea una lista dentro de una categoría específica.
@@ -679,8 +697,10 @@ List
 
 Resultado:
 Inserta una nueva lista y retorna su ID.
+---
+---
 
-4. Procedimiento: sp_create_task
+## 4. Procedimiento: sp_create_task
 
 Descripción:
 Crea una nueva tarea dentro de una lista determinada.
@@ -711,16 +731,18 @@ Task
 
 Resultado:
 Inserta una nueva tarea con estado inicial 'NEW'.
+---
+---
 
-5. Procedimiento: sp_update_task
+## 5. Procedimiento: sp_update_task
 
-Descripción:
+# Descripción:
 Actualiza los datos de una tarea existente.
 
-Propósito:
+# Propósito:
 Modificar título, descripción, prioridad o fecha de expiración de una tarea.
 
-Parámetros:
+# Parámetros:
 
 Tipo	Nombre	Descripción
 IN	p_task_id	ID de la tarea a modificar
@@ -742,10 +764,12 @@ Task
 
 Resultado:
 Actualiza los campos especificados de la tarea.
+---
+---
 
-6. Procedimiento: sp_change_task_status
+## 6. Procedimiento: sp_change_task_status
 
-Descripción:
+# Descripción:
 Cambia el estado de una tarea existente y opcionalmente agrega un comentario.
 
 Propósito:
@@ -769,8 +793,10 @@ Task, Task_status
 
 Resultado:
 Actualiza el estado y, si aplica, el último comentario.
+--- 
+---
 
-7. Procedimiento: sp_move_task
+# 7. Procedimiento: sp_move_task
 
 Descripción:
 Mueve una tarea de una lista a otra dentro del mismo usuario.
@@ -795,8 +821,10 @@ Task
 
 Resultado:
 La tarea es reasignada a la lista destino.
+---
+---
 
-8. Procedimiento: sp_delete_task
+## 8. Procedimiento: sp_delete_task
 
 Descripción:
 Elimina una tarea junto con su historial de estados.
@@ -814,8 +842,10 @@ Task_status, Task
 
 Resultado:
 Elimina la tarea y sus registros asociados mediante transacción.
+---
+---
 
-9. Procedimiento: sp_delete_list
+## 9. Procedimiento: sp_delete_list
 
 Descripción:
 Elimina una lista y todas las tareas que contiene.
@@ -833,8 +863,10 @@ Task_status, Task, List
 
 Resultado:
 Elimina todos los datos asociados en una transacción segura.
-
-10. Procedimiento: sp_delete_category
+---
+---
+ 
+## 10. Procedimiento: sp_delete_category
 
 Descripción:
 Elimina una categoría junto con sus listas y tareas asociadas.
@@ -852,8 +884,10 @@ Task_status, Task, List, Category
 
 Resultado:
 Elimina la categoría y todas las entidades relacionadas.
+---
+---
 
-11. Procedimiento: sp_list_tasks
+## 11. Procedimiento: sp_list_tasks
 
 Descripción:
 Devuelve un listado filtrado de tareas según distintos criterios.
@@ -878,8 +912,10 @@ Task, List, Category
 
 Resultado:
 Devuelve las tareas filtradas, ordenadas por vencimiento, prioridad y estado.
+---
+---
 
-12. Procedimiento: sp_get_dashboard_counts
+## 12. Procedimiento: sp_get_dashboard_counts
 
 Descripción:
 Obtiene métricas y conteos de tareas para mostrar en el panel principal (dashboard).
@@ -897,8 +933,9 @@ Task, List, Category
 
 Resultado:
 Devuelve totales de tareas, clasificadas por estado, vencidas y del día actual.
-
-13. Procedimiento: sp_tasks_next_due
+---
+---
+## 13.Procedimiento: sp_tasks_next_due
 
 Descripción:
 Muestra las próximas tareas que vencerán para un usuario.
@@ -917,3 +954,4 @@ Task, List, Category
 
 Resultado:
 Devuelve las tareas no completadas, ordenadas por fecha de vencimiento ascendente.
+---

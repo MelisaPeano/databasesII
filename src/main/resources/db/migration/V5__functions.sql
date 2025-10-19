@@ -68,7 +68,7 @@ CREATE FUNCTION fn_list_owner_user_id(p_list_id INT)
 BEGIN
     DECLARE v_user_id INT;
     SELECT c.user_id INTO v_user_id
-    FROM `List` l
+    FROM `ListTable` l
              JOIN `Category` c ON c.category_id = l.category_id
     WHERE l.list_id = p_list_id;
     RETURN v_user_id;

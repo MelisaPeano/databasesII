@@ -21,11 +21,12 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Optional<Category> findByIdAndUserId(Integer id, Integer userId);
 
     // Contar listas asociadas a una categoría
-    @Query("SELECT COUNT(l) FROM List l WHERE l.category.id = :categoryId")
+    @Query("SELECT COUNT(l) FROM ListTable l WHERE l.category.id = :categoryId")
     int countListsByCategoryId(@Param("categoryId") Integer categoryId);
 
     // Método adicional usando el nombre alternativo que tienes en la entidad
     default boolean existsByUserIdAndCategoryName(Integer userId, String categoryName) {
         return existsByUserIdAndName(userId, categoryName);
     }
+
 }

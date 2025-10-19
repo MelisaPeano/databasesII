@@ -9,4 +9,6 @@ public interface CategoryService {
     boolean deleteCategory(Integer categoryId);
     List<Category> getCategoriesByUser(Integer userId);
     boolean categoryBelongsToUser(Integer categoryId, Integer userId);
+    List<Category> findAll();
+
 }

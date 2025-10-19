@@ -18,7 +18,7 @@ CREATE TRIGGER set_created_in_category
 
 -- Trigger 4: created_in para List
 CREATE TRIGGER set_created_in_list
-    BEFORE INSERT ON List
+    BEFORE INSERT ON ListTable
     FOR EACH ROW
     SET NEW.created_in = NOW();
 
@@ -48,7 +48,7 @@ CREATE TRIGGER delete_lists_with_category
     AFTER DELETE ON Category
     FOR EACH ROW
 BEGIN
-    DELETE FROM List WHERE category_id = OLD.category_id;
+    DELETE FROM ListTable WHERE category_id = OLD.category_id;
 END;
 
 -- Trigger 8: validar fecha de expiración

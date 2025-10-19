@@ -67,12 +67,12 @@ BEGIN
     END IF;
 
     IF EXISTS (
-        SELECT 1 FROM `List` WHERE category_id = p_category_id AND LOWER(list_name) = LOWER(p_name)
+        SELECT 1 FROM `ListTable` WHERE category_id = p_category_id AND LOWER(list_name) = LOWER(p_name)
     ) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Lista duplicada en la categoría';
     END IF;
 
-    INSERT INTO `List`(category_id, list_name, list_description)
+    INSERT INTO `ListTable`(category_id, list_name, list_description)
     VALUES(p_category_id, p_name, p_desc);
 
     SET p_list_id = LAST_INSERT_ID();
@@ -90,7 +90,7 @@ CREATE PROCEDURE sp_create_task(
     OUT p_task_id   INT
 )
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM `List` WHERE list_id = p_list_id) THEN
+    IF NOT EXISTS (SELECT 1 FROM `ListTable` WHERE list_id = p_list_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Lista inexistente';
     END IF;
 
@@ -192,7 +192,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Tarea inexistente';
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM `List` WHERE list_id = p_target_list_id) THEN
+    IF NOT EXISTS (SELECT 1 FROM `ListTable` WHERE list_id = p_target_list_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Lista destino inexistente';
     END IF;
 
@@ -226,7 +226,7 @@ BEGIN
     WHERE t.list_id = p_list_id;
 
     DELETE FROM `Task` WHERE list_id = p_list_id;
-    DELETE FROM `List` WHERE list_id = p_list_id;
+    DELETE FROM `ListTable` WHERE list_id = p_list_id;
     COMMIT;
 END $$
 
@@ -236,14 +236,14 @@ BEGIN
     START TRANSACTION;
     DELETE ts FROM `Task_status` ts
                        JOIN `Task` t ON t.task_id = ts.task_id
-                       JOIN `List` l ON l.list_id = t.list_id
+                       JOIN `ListTable` l ON l.list_id = t.list_id
     WHERE l.category_id = p_category_id;
 
     DELETE t FROM `Task` t
-                      JOIN `List` l ON l.list_id = t.list_id
+                      JOIN `ListTable` l ON l.list_id = t.list_id
     WHERE l.category_id = p_category_id;
 
-    DELETE FROM `List` WHERE category_id = p_category_id;
+    DELETE FROM `ListTable` WHERE category_id = p_category_id;
     DELETE FROM `Category` WHERE category_id = p_category_id;
     COMMIT;
 END $$
@@ -272,7 +272,7 @@ BEGIN
         l.list_id, l.list_name,
         c.category_id, c.category_name
     FROM `Task` t
-             JOIN `List` l ON l.list_id = t.list_id
+             JOIN `ListTable` l ON l.list_id = t.list_id
              JOIN `Category` c ON c.category_id = l.category_id
     WHERE c.user_id = p_user_id
       AND (p_category_id IS NULL OR c.category_id = p_category_id)
@@ -306,7 +306,7 @@ BEGIN
         SUM(fn_is_overdue_by_dates(t.expires_in, t.task_status))   AS cnt_overdue,
         SUM(DATE(t.expires_in) = CURDATE() AND t.task_status <> 'DONE') AS cnt_due_today
     FROM `Task` t
-             JOIN `List` l ON l.list_id = t.list_id
+             JOIN `ListTable` l ON l.list_id = t.list_id
              JOIN `Category` c ON c.category_id = l.category_id
     WHERE c.user_id = p_user_id;
 END $$
@@ -323,7 +323,7 @@ BEGIN
         t.task_id, t.task_title, t.expires_in, t.priority, t.task_status,
         l.list_name, c.category_name
     FROM `Task` t
-             JOIN `List` l ON l.list_id = t.list_id
+             JOIN `ListTable` l ON l.list_id = t.list_id
              JOIN `Category` c ON c.category_id = l.category_id
     WHERE c.user_id = p_user_id
       AND t.task_status <> 'DONE'

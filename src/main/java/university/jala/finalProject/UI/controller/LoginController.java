@@ -45,19 +45,38 @@ public class LoginController {
     private void handleLogin() {
         hideAllErrors();
 
-        if (validateForm()) {
+        try {
+            if (!validateForm()) {
+                System.out.println("❌ Validación de formulario falló (email o password vacíos o inválidos).");
+                return;
+            }
+
             String email = emailField.getText();
             String password = passwordField.getText();
+
+            System.out.println("🔍 Intentando autenticar con email: " + email);
 
             Optional<AppUser> user = userService.authenticate(email, password);
 
             if (user.isPresent()) {
-                authController.onLoginSuccess(user.get());
+                System.out.println("✅ Autenticación exitosa para usuario: " + user.get().getUserName());
+                if (authController != null) {
+                    authController.onLoginSuccess(user.get());
+                } else {
+                    System.out.println("⚠️ authController es NULL — no se puede redirigir tras el login.");
+                }
             } else {
+                System.out.println("❌ Autenticación fallida: usuario no encontrado o contraseña incorrecta.");
                 showAuthError("Credenciales incorrectas. Intenta nuevamente.");
             }
+
+        } catch (Exception e) {
+            System.out.println("🔥 Error durante el proceso de login:");
+            e.printStackTrace();
+            showAuthError("Ocurrió un error interno. Revisa la consola para más detalles.");
         }
     }
+
 
     @FXML
     private void switchToRegister() {

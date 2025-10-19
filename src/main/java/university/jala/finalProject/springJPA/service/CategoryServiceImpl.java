@@ -73,6 +73,11 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByIdAndUserId(categoryId, userId).isPresent();
     }
 
+    @Override
+    public List<Category> findAll() {
+        return List.of();
+    }
+
     public int countListsByCategoryId(Integer categoryId) {
         return categoryRepository.countListsByCategoryId(categoryId);
     }

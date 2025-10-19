@@ -2,7 +2,7 @@ package university.jala.finalProject.springJPA.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import university.jala.finalProject.springJPA.entity.List;
+import university.jala.finalProject.springJPA.entity.ListTable;
 import university.jala.finalProject.springJPA.repository.ListRepository;
 
 import java.util.Collection;
@@ -17,33 +17,33 @@ public class ListService {
     /**
      * Obtener todas las listas de una categoría
      */
-    public Collection<List> getListsByCategory(Integer categoryId) {
+    public Collection<ListTable> getListsByCategory(Integer categoryId) {
         return listRepository.findByCategory_Id(categoryId);
     }
 
     /**
      * Obtener listas por categoría verificando permisos de usuario
      */
-    public Collection<List> getListsByCategoryAndUser(Integer categoryId, Integer userId) {
+    public Collection<ListTable> getListsByCategoryAndUser(Integer categoryId, Integer userId) {
         return listRepository.findByCategoryIdAndUserId(categoryId, userId);
     }
 
     /**
      * Obtener una lista específica verificando que pertenezca al usuario
      */
-    public Optional<List> getListByIdAndUser(Integer listId, Integer userId) {
+    public Optional<ListTable> getListByIdAndUser(Integer listId, Integer userId) {
         return listRepository.findByIdAndUserId(listId, userId);
     }
 
     /**
      * Guardar o actualizar una lista
      */
-    public List saveList(List list) {
+    public ListTable saveList(ListTable listTable) {
         // Puedes agregar lógica de validación aquí
-        if (list.getCreatedIn() == null) {
-            list.setCreatedIn(java.time.Instant.now());
+        if (listTable.getCreatedIn() == null) {
+            listTable.setCreatedIn(java.time.Instant.now());
         }
-        return listRepository.save(list);
+        return listRepository.save(listTable);
     }
 
     /**
@@ -67,14 +67,14 @@ public class ListService {
     /**
      * Obtener todas las listas
      */
-    public Collection<List> getAllLists() {
+    public Collection<ListTable> getAllLists() {
         return listRepository.findAll();
     }
 
     /**
      * Obtener una lista por ID
      */
-    public Optional<List> getListById(Integer listId) {
+    public Optional<ListTable> getListById(Integer listId) {
         return listRepository.findById(listId);
     }
 

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import university.jala.finalProject.springJPA.entity.List;
+import university.jala.finalProject.springJPA.entity.ListTable;
 import university.jala.finalProject.springJPA.service.ListService;
 
 import java.util.Collection;
@@ -19,33 +19,33 @@ public class ListController {
     private ListService listService;
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Collection<List>> getListsByCategory(@PathVariable Integer categoryId) {
+    public ResponseEntity<Collection<ListTable>> getListsByCategory(@PathVariable Integer categoryId) {
         try {
-            Collection<List> lists = listService.getListsByCategory(categoryId);
-            return ResponseEntity.ok(lists);
+            Collection<ListTable> listEntities = listService.getListsByCategory(categoryId);
+            return ResponseEntity.ok(listEntities);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/category/{categoryId}/user/{userId}")
-    public ResponseEntity<Collection<List>> getListsByCategoryAndUser(
+    public ResponseEntity<Collection<ListTable>> getListsByCategoryAndUser(
             @PathVariable Integer categoryId,
             @PathVariable Integer userId) {
         try {
-            Collection<List> lists = listService.getListsByCategoryAndUser(categoryId, userId);
-            return ResponseEntity.ok(lists);
+            Collection<ListTable> listEntities = listService.getListsByCategoryAndUser(categoryId, userId);
+            return ResponseEntity.ok(listEntities);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/{listId}/user/{userId}")
-    public ResponseEntity<List> getListByIdAndUser(
+    public ResponseEntity<ListTable> getListByIdAndUser(
             @PathVariable Integer listId,
             @PathVariable Integer userId) {
         try {
-            Optional<List> list = listService.getListByIdAndUser(listId, userId);
+            Optional<ListTable> list = listService.getListByIdAndUser(listId, userId);
             return list.map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
@@ -54,21 +54,21 @@ public class ListController {
     }
 
     @PostMapping
-    public ResponseEntity<List> createList(@RequestBody List list) {
+    public ResponseEntity<ListTable> createList(@RequestBody ListTable listTable) {
         try {
-            List savedList = listService.saveList(list);
-            return ResponseEntity.ok(savedList);
+            ListTable savedListTable = listService.saveList(listTable);
+            return ResponseEntity.ok(savedListTable);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<List> updateList(@PathVariable Integer id, @RequestBody List list) {
+    public ResponseEntity<ListTable> updateList(@PathVariable Integer id, @RequestBody ListTable listTable) {
         try {
-            list.setId(id);
-            List updatedList = listService.saveList(list);
-            return ResponseEntity.ok(updatedList);
+            listTable.setId(id);
+            ListTable updatedListTable = listService.saveList(listTable);
+            return ResponseEntity.ok(updatedListTable);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -85,19 +85,19 @@ public class ListController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<List>> getAllLists() {
+    public ResponseEntity<Collection<ListTable>> getAllLists() {
         try {
-            Collection<List> lists = listService.getAllLists();
-            return ResponseEntity.ok(lists);
+            Collection<ListTable> listEntities = listService.getAllLists();
+            return ResponseEntity.ok(listEntities);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List> getListById(@PathVariable Integer id) {
+    public ResponseEntity<ListTable> getListById(@PathVariable Integer id) {
         try {
-            Optional<List> list = listService.getListById(id);
+            Optional<ListTable> list = listService.getListById(id);
             return list.map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
