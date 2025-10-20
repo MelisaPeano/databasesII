@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:id="overlay"
+           visible="false" managed="false" styleClass="loading-overlay">
+    <children>
+        <ProgressIndicator fx:id="spinner" prefWidth="80" prefHeight="80"/>
+    </children>
+</StackPane>

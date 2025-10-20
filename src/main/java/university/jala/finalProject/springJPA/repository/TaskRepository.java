@@ -1,4 +1,4 @@
-package university.jala.finalProject.springJPA.repo;
+package university.jala.finalProject.springJPA.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import university.jala.finalProject.springJPA.entity.Task;
@@ -7,7 +7,9 @@ import university.jala.finalProject.springJPA.entity.TaskState;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Integer> {
+
     List<Task> findByList_Id(Integer listId);
     List<Task> findByList_IdAndStatus(Integer listId, TaskState status);
+    List<Task> findAll();
     boolean existsByList_IdAndTitleIgnoreCase(Integer listId, String title);
 }

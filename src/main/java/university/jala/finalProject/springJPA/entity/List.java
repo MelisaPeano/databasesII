@@ -25,6 +25,9 @@ public class List {
     @Column(name = "created_in")
     private Instant createdIn;
 
+    @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<Task> tasks = new java.util.ArrayList<>();
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -48,6 +51,8 @@ public class List {
         if (categoryId == null) { this.category = null; }
         else { Category c = new Category(); c.setId(categoryId); this.category = c; }
     }
+    public java.util.List<Task> getTasks() { return tasks; }
+    public void setTasks(java.util.List<Task> tasks) { this.tasks = tasks; }
 
     public String getListName() { return name; }
     public void setListName(String listName) { this.name = listName; }

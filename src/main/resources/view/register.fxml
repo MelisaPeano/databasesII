@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" alignment="CENTER" style="-fx-padding: 40; -fx-background-color: white; -fx-border-radius: 10; -fx-background-radius: 10;"
+      xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="university.jala.finalProject.UI.controller.RegisterController">
+
+    <!-- titulo -->
+    <Label text="Crear Cuenta" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+
+    <!-- formulario -->
+    <VBox spacing="15" style="-fx-pref-width: 300;">
+        <!-- campo usuario -->
+        <VBox spacing="5">
+            <Label text="Usuario:" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <TextField fx:id="usernameField" promptText="Nombre de usuario"
+                       style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+            <Label fx:id="usernameError" style="-fx-text-fill: #d32f2f; -fx-font-size: 12px;" visible="false"/>
+        </VBox>
+
+        <!-- campo email -->
+        <VBox spacing="5">
+            <Label text="Email:" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <TextField fx:id="emailField" promptText="tu@email.com"
+                       style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+            <Label fx:id="emailError" style="-fx-text-fill: #d32f2f; -fx-font-size: 12px;" visible="false"/>
+        </VBox>
+
+        <!-- campo contraseña -->
+        <VBox spacing="5">
+            <Label text="Contraseña:" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <PasswordField fx:id="passwordField" promptText="Mínimo 6 caracteres"
+                           style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+            <Label fx:id="passwordError" style="-fx-text-fill: #d32f2f; -fx-font-size: 12px;" visible="false"/>
+        </VBox>
+
+        <!-- campo para confirmar contraseña -->
+        <VBox spacing="5">
+            <Label text="Confirmar Contraseña:" style="-fx-font-weight: bold; -fx-text-fill: #555;"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Repite tu contraseña"
+                           style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5;"/>
+            <Label fx:id="confirmPasswordError" style="-fx-text-fill: #d32f2f; -fx-font-size: 12px;" visible="false"/>
+        </VBox>
+
+        <!-- boton registro -->
+        <Button text="Registrarse" onAction="#handleRegister"
+                style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-border-radius: 5;"
+                defaultButton="true"/>
+    </VBox>
+
+    <!-- enlace a login -->
+    <HBox spacing="5" alignment="CENTER">
+        <Label text="¿Ya tienes cuenta?" style="-fx-text-fill: #666;"/>
+        <Button text="Inicia sesión aquí" onAction="#switchToLogin"
+                style="-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-underline: true; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- mensajes de error -->
+    <Label fx:id="authError" style="-fx-text-fill: #d32f2f; -fx-font-size: 14px; -fx-wrap-text: true; -fx-max-width: 300; -fx-alignment: center;"
+           visible="false"/>
+
+</VBox>

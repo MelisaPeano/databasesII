@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="university.jala.finalProject.UI.controller.DashboardController">
+
+    <!-- 🔹 Header con filtros -->
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #f8f9fa;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="📋 Lista de Tareas" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+            <Region HBox.hgrow="ALWAYS" />
+            <TextField fx:id="searchField" promptText="Buscar tarea..." />
+            <ComboBox fx:id="statusFilter" promptText="Filtrar por estado" />
+            <Button text="➕ Nueva tarea" onAction="#openTaskForm" />
+        </HBox>
+    </top>
+
+    <!-- 🔹 Tabla principal -->
+    <center>
+        <TableView fx:id="taskTable" prefHeight="500">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <columns>
+                <TableColumn fx:id="nameColumn" text="Nombre" prefWidth="200"/>
+                <TableColumn fx:id="descriptionColumn" text="Descripción" prefWidth="300"/>
+                <TableColumn fx:id="statusColumn" text="Estado" prefWidth="120"/>
+                <TableColumn fx:id="actionsColumn" text="Acciones" prefWidth="150"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <!-- 🔹 Footer con estadísticas -->
+    <bottom>
+        <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-background-color: #f1f3f5;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="statsLabel" text="🔵 Nueva: 0 | 🟡 En progreso: 0 | 🟢 Completado: 0 | 🔴 Pendiente: 0" />
+        </HBox>
+    </bottom>
+</BorderPane>

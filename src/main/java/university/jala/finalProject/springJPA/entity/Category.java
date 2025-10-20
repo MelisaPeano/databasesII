@@ -26,13 +26,6 @@ public class Category {
     @Column(name = "created_in")
     private Instant createdIn;
 
-    @Column(name = "is_default")
-    private Boolean isDefault;
-
-    public Boolean getDefault() {
-        return isDefault;
-    }
-
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

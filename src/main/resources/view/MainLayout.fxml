@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Node?>
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="university.jala.finalProject.UI.controller.MainLayoutController"
+           stylesheets="@/css/dashboard.css">
+    <!-- Capa base: BorderPane con Sidebar + Header + Centro dinámico -->
+    <BorderPane fx:id="border" StackPane.alignment="CENTER">
+        <left>
+            <fx:include source="Sidebar.fxml" fx:id="sidebarInclude"/>
+        </left>
+        <top>
+            <fx:include source="UserHeader.fxml" fx:id="headerInclude"/>
+        </top>
+        <center>
+            <StackPane fx:id="centerPane"/>
+        </center>
+    </BorderPane>
+
+
+    <!-- Overlay: Loading -->
+    <fx:include source="LoadingSpinner.fxml" fx:id="loadingInclude"/>
+</StackPane>

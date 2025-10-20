@@ -40,8 +40,18 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
         try {
-            userService.register(req.getEmail(), req.getPassword());
-            return ResponseEntity.ok("Usuario creado");
+            AppUser user = userService.register(
+                    req.getUsername() != null ? req.getUsername() : req.getEmail(),
+                    req.getEmail(),
+                    req.getPassword()
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Usuario creado exitosamente");
+            response.put("userId", user.getUserId());
+            response.put("username", user.getUserName());
+
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
