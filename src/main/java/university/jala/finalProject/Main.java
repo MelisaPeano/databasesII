@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import university.jala.finalProject.UI.App;
 import university.jala.finalProject.springJPA.entity.AppUser;
 import university.jala.finalProject.springJPA.repository.AppUserRepository;
@@ -11,7 +12,13 @@ import university.jala.finalProject.springJPA.service.UserService;
 
 import java.util.Optional;
 
+
+
 @SpringBootApplication
+@ComponentScan(basePackages = {
+        "university.jala.finalProject.springJPA",
+        "university.jala.finalProject.UI"
+})
 public class Main {
 
     private static ConfigurableApplicationContext applicationContext;

@@ -4,13 +4,17 @@ package university.jala.finalProject.UI.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import university.jala.finalProject.UI.model.Task;
 import university.jala.finalProject.UI.service.TaskUIService;
+import university.jala.finalProject.UI.util.ViewLoader;
 import university.jala.finalProject.springJPA.entity.AppUser;
 
 import java.util.List;
@@ -32,6 +36,7 @@ public class DashboardController {
     private TaskUIService taskService;
 
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
+
 
     public void setCurrentUser(AppUser user) {
         this.currentUser = user;
@@ -141,4 +146,5 @@ public class DashboardController {
     private void openTaskForm() {
         taskService.openCreateForm();
     }
+
 }

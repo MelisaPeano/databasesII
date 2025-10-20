@@ -9,7 +9,9 @@ import university.jala.finalProject.springJPA.repository.TaskRepository;
 import university.jala.finalProject.springJPA.repository.TaskStatusHistoryRepository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -17,12 +19,14 @@ public class TaskService {
     private final TaskRepository taskRepo;
     private final ListRepository listRepo;
     private final TaskStatusHistoryRepository historyRepo;
+    private final TaskStatusHistoryRepository taskStatusHistoryRepository;
 
     public TaskService(TaskRepository taskRepo, ListRepository listRepo,
-                       TaskStatusHistoryRepository historyRepo) {
+                       TaskStatusHistoryRepository historyRepo, TaskStatusHistoryRepository taskStatusHistoryRepository) {
         this.taskRepo = taskRepo;
         this.listRepo = listRepo;
         this.historyRepo = historyRepo;
+        this.taskStatusHistoryRepository = taskStatusHistoryRepository;
     }
 
     private TaskPriority parsePriority(String p) {
@@ -87,13 +91,34 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<TaskResponse> list(Integer listId, String statusOpt) {
+    public java.util.List<TaskResponse> list(Integer userId, Integer listId, String statusOpt) {
         TaskState st = parseStatus(statusOpt);
-        java.util.List<Task> items = (st == null)
-                ? taskRepo.findByListTable_Id(listId)
-                : taskRepo.findByListTable_IdAndStatus(listId, st);
-        return items.stream().map(this::toResponse).collect(java.util.stream.Collectors.toList());
+        java.util.List<Task> items;
+
+        if (userId != null && listId == null && st == null) {
+            // ✅ Todas las tareas del usuario actual
+            items = taskRepo.findAllByUserId(userId);
+        } else if (userId != null && listId == null) {
+            // ✅ Todas las tareas del usuario por estado
+            items = taskRepo.findAllByUserIdAndStatus(userId, st);
+        } else if (st == null) {
+            // ✅ Todas las tareas de una lista específica
+            items = taskRepo.findByListTable_Id(listId);
+        } else {
+            // ✅ Tareas de una lista específica por estado
+            items = taskRepo.findByListTable_IdAndStatus(listId, st);
+        }
+
+        System.out.println("🟢 [TaskService] Usuario: " + userId +
+                " | Lista: " + listId +
+                " | Estado: " + st +
+                " | Total: " + items.size());
+
+        return items.stream()
+                .map(this::toResponse)
+                .collect(java.util.stream.Collectors.toList());
     }
+
 
 
     @Transactional
@@ -143,5 +168,12 @@ public class TaskService {
     public void delete(Integer taskId) {
         if (!taskRepo.existsById(taskId)) throw new IllegalArgumentException("Tarea no encontrada");
         taskRepo.deleteById(taskId);
+    }
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getTasksByUser(Integer userId) {
+        var tasks = taskRepo.findByListTable_Category_UserId(userId);
+        return tasks.stream()
+                .map(TaskResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 }

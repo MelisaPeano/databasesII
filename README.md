@@ -9,7 +9,7 @@ Contraseña: clave asociada al usuario.
 
 ## Botones disponibles:
 
-# Iniciar Sesión: valida las credenciales e ingresa al panel principal.
+Iniciar Sesión: valida las credenciales e ingresa al panel principal.
 
 Regístrate aquí: redirige al formulario de creación de cuenta.
 

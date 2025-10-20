@@ -18,11 +18,14 @@ public class TaskUIService {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private CurrentUserService currentUserService;
 
     /* -------------------- READ -------------------- */
     public List<Task> getAllTasksByList(Integer listId) {
         try {
-            var responses = taskService.list(listId, null);
+            Integer userId = currentUserService.getCurrentUserId();
+            var responses = taskService.list(userId, listId, null);
             return responses.stream()
                     .map(Task::fromResponse)
                     .collect(Collectors.toList());
@@ -34,12 +37,14 @@ public class TaskUIService {
 
     public List<Task> getAllTasks() {
         try {
-            var responses = taskService.list(null, null);
+            Integer userId = currentUserService.getCurrentUserId();
+            var responses = taskService.list(userId, null, null);
+            System.out.println("✅ [TaskUIService] Tareas del usuario " + userId + ": " + responses.size());
             return responses.stream()
                     .map(Task::fromResponse)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            showError("Error al cargar todas las tareas: " + e.getMessage());
+            showError("Error al cargar todas las tareas");
             return List.of();
         }
     }
@@ -113,5 +118,18 @@ public class TaskUIService {
 
     private void showInfo(String msg) {
         Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, msg).showAndWait());
+    }
+
+    public List<Task> getAllTasksByUser(Integer userId) {
+        try {
+            var responses = taskService.getTasksByUser(userId);
+            return responses.stream()
+                    .map(Task::fromResponse)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error al cargar tareas del usuario: " + e.getMessage());
+            return List.of();
+        }
     }
 }

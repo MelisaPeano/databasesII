@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS Task_status (
     status ENUM('NEW', 'IN_PROGRESS', 'DONE', 'CANCELLED'),
     changed_in DATETIME,
     comment VARCHAR(100) NULL,
-    FOREIGN KEY (task_id) REFERENCES Task(task_id)
+    FOREIGN KEY (task_id) REFERENCES Task(task_id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS refresh_token (
     token_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,

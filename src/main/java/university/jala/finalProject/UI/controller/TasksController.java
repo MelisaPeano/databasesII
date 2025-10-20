@@ -10,8 +10,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import university.jala.finalProject.UI.model.Task;
+import university.jala.finalProject.UI.service.CategoryServiceUI;
+import university.jala.finalProject.UI.service.CurrentUserService;
 import university.jala.finalProject.UI.service.TaskUIService;
 import university.jala.finalProject.springJPA.service.CategoryService;
+import university.jala.finalProject.springJPA.service.CategoryServiceImpl;
 import university.jala.finalProject.springJPA.service.ListService;
 import university.jala.finalProject.springJPA.entity.Category;
 import university.jala.finalProject.springJPA.entity.ListTable;
@@ -36,13 +39,17 @@ public class TasksController {
     @FXML private ComboBox<String> cbList;
 
     @Autowired private TaskUIService taskUIService;
-    @Autowired private CategoryService categoryService;
     @Autowired private ListService listService;
+    @Autowired private CurrentUserService currentUserService;
+
+
 
     private final ObservableList<Task> taskList = FXCollections.observableArrayList();
     private final Map<String, Integer> categoryMap = new HashMap<>();
     private final Map<String, Integer> listMap = new HashMap<>();
     private Integer currentListId;
+    @Autowired
+    private CategoryServiceUI categoryServiceUI;
 
     @FXML
     public void initialize() {
@@ -142,20 +149,37 @@ public class TasksController {
 
         new Thread(() -> {
             try {
-                if (currentListId == null && cbList.getValue() == null) return;
-                Integer listId = currentListId != null ? currentListId : listMap.get(cbList.getValue());
-                List<Task> tasks = taskUIService.getAllTasksByList(listId);
+                Integer userId = currentUserService.getCurrentUserId();
+                if (userId == null) {
+                    Platform.runLater(() -> {
+                        pi.setVisible(false);
+                        showError("No hay un usuario activo. Inicie sesión primero.");
+                    });
+                    return;
+                }
+
+                System.out.println("🔵 Cargando todas las tareas del usuario: " + userId);
+                List<Task> tasks = taskUIService.getAllTasksByUser(userId);
+                System.out.println("🟢 Total de tareas encontradas: " + tasks.size());
 
                 Platform.runLater(() -> {
                     taskList.setAll(tasks);
                     pi.setVisible(false);
+
+                    if (tasks.isEmpty()) {
+                        showError("No hay tareas registradas para este usuario.");
+                    }
                 });
             } catch (Exception e) {
                 e.printStackTrace();
-                showError("Error al cargar tareas: " + e.getMessage());
+                Platform.runLater(() -> {
+                    pi.setVisible(false);
+                    showError("Error al cargar tareas: " + e.getMessage());
+                });
             }
         }).start();
     }
+
 
     @FXML
     private void onAddTask() {
@@ -191,7 +215,13 @@ public class TasksController {
     /* ------------------- Cargar categorías y listas ------------------- */
     private void loadCategories() {
         try {
-            var categories = categoryService.findAll();
+            Integer userId = currentUserService.getCurrentUserId();
+
+            if (userId == null) {
+                showError("No hay un usuario activo. Inicie sesión primero.");
+                return;
+            }
+            var categories = categoryServiceUI.getCategoriesByUser(userId);
             for (Category c : categories) {
                 categoryMap.put(c.getName(), c.getId());
                 cbCategory.getItems().add(c.getName());
@@ -205,15 +235,30 @@ public class TasksController {
         cbList.getItems().clear();
         listMap.clear();
         try {
-            var lists = listService.getListsByCategory(categoryId);
+            Integer userId = currentUserService.getCurrentUserId();
+            if (userId == null) {
+                showError("No hay un usuario activo. Inicie sesión primero.");
+                return;
+            }
+
+            System.out.println("🟡 Cargando listas para categoryId=" + categoryId + ", userId=" + userId);
+            var lists = listService.getListsByCategoryAndUser(categoryId, userId);
+
+            if (lists.isEmpty()) {
+                System.out.println("⚠️ No se encontraron listas para esta categoría.");
+            }
+
             for (ListTable l : lists) {
                 listMap.put(l.getName(), l.getId());
                 cbList.getItems().add(l.getName());
             }
+
         } catch (Exception e) {
+            e.printStackTrace();
             showError("Error al cargar listas: " + e.getMessage());
         }
     }
+
 
     /* ------------------- Utilidades UI ------------------- */
     private void showError(String msg) {

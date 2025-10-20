@@ -26,4 +26,6 @@ public class SidebarController {
     @FXML public void goLists() {
         navigator.navigateTo("HomeView.fxml");
     }
+
+
 }

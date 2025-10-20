@@ -13,7 +13,11 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService service;
-    public TaskController(TaskService service) { this.service = service; }
+    private final TaskService taskService;
+
+    public TaskController(TaskService service, TaskService taskService) { this.service = service;
+        this.taskService = taskService;
+    }
 
     // POST /api/lists/:listId/tasks
     @PostMapping("/lists/{listId}/tasks")
@@ -26,11 +30,15 @@ public class TaskController {
 
     // GET /api/lists/:listId/tasks?status=tatata
     @GetMapping("/lists/{listId}/tasks")
-    public List<TaskResponse> list(
-            @PathVariable Integer listId,
-            @RequestParam(value = "status", required = false) String status) {
-        return service.list(listId, status);
+    public ResponseEntity<List<TaskResponse>> list(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Integer listId,
+            @RequestParam(required = false) String status
+    ) {
+        var tasks = taskService.list(userId, listId, status);
+        return ResponseEntity.ok(tasks);
     }
+
 
     // PUT /api/tasks/:id
     @PutMapping("/tasks/{id}")
