@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS Category (
     category_name VARCHAR(60) NOT NULL,
     category_color CHAR(7) NULL,
     created_in DATETIME,
+    is_default boolean default FALSE,
     FOREIGN KEY (user_id) REFERENCES AppUser(user_id)
 );
 
@@ -41,4 +42,11 @@ CREATE TABLE IF NOT EXISTS Task_status (
     changed_in DATETIME,
     comment VARCHAR(100) NULL,
     FOREIGN KEY (task_id) REFERENCES Task(task_id)
+);
+CREATE TABLE IF NOT EXISTS refresh_token (
+    token_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    token VARCHAR(255),
+    expiry_date DATETIME,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES AppUser(user_id)
 );
